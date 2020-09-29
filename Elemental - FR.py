@@ -190,6 +190,10 @@ except FileNotFoundError:
 
 """ Boucle de jeu principale """
 
+print("Bienvenue dans Elemental !\n")
+print("Le principe du jeu est très simple :\nUtilisez les éléments à votre disposition pour en créer de nouveaux.\n")
+print("Pour plus d'informations, tapez \"aide\".\n")
+
 quitter = False
 while not quitter:
 
@@ -251,7 +255,7 @@ while not quitter:
     
     elif instruction in {"aide"}:
         # Affiche la liste des commandes
-        print("List of commands:\n'groupe'\n'fuione'\n'liste'\n'quitter'\n'aide'")
+        print("\nPour obtenir une liste des éléments, entrez \"liste\"\n")
 
     elif instruction in {"quitter", "fermer", "stopper"}:
         # Gère la fermeture du programme
