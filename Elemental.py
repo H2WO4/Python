@@ -84,14 +84,20 @@ class Group:
         # Overload the 'str()' operator to return the group's name
         return self.name
 
+# Defining two functions to allow encoding and decoding for the save file
+def encode(strToEncode):
+    # Uses a single-line for instruction to manually convert each character to hexadecimal
+    return ''.join([str(hex((ord(n) * 2 + 3) * 7)) for n in strToEncode])
+
+def decode(strToDecode):
+    # Uses a single-line for instruction to manually convert each character back to ASCII
+    return chr((int(strToDecode, 16) // 7 - 3) // 2)
 
 # Defining lists to allow indexing of all elements/groups
 Elements = []
 ElementsCreated = []
 ElementsNotCreated = []
 Groups = []
-
-
 
 """ Creation of the instances of each objects, in order to set up game logic """
 
@@ -178,17 +184,21 @@ for i in Groups:
 
 # Handle the save file if present
 try:
-    with open("ElementSave.txt", "r") as f:
+    with open("Elemental.save", "r") as f:
         # Read the save file and reveal all elements listed
-        toRead = f.read().split("\n")[:-1]
-        for i in toRead:
-            eval(i.replace(" ", "")).reveal()
+        toRead = f.read().split("0x")[1:]
+        for j in ''.join([decode(i) for i in toRead]).split("\n")[:-1]:
+            eval(j.replace(" ", "")).reveal()
 except FileNotFoundError:
     pass
 
 
 
 """ Main game loop """
+
+print("Welcome to Elemental !\n")
+print("The rules are simple :\nUse all the elements to your disposition to create new ones.")
+print("For more detailed help, type \"help\".\n")
 
 quit = False
 while not quit:
@@ -218,7 +228,7 @@ while not quit:
             # Gather two text inputs and verify their validity
             if not (reactif1 := eval(input("\nChoose a first element : ").title())) in ElementsCreated:
                 raise IndexError
-            if not (reactif2 := eval(input("Choose a first element : ").title())) in ElementsCreated:
+            if not (reactif2 := eval(input("Choose a second element : ").title())) in ElementsCreated:
                 raise IndexError
 
             # Put them in a single variable and evaluate it to transform it into a set
@@ -248,8 +258,11 @@ while not quit:
             print(i)
     
     elif command in {"help"}:
-        # Display a list of commands
-        print("List of commands:\n'group'\n'fuse'\n'list'\n'quit'\n'help'")
+        # Display help text
+        print("\nIn order to obtain a complete list of discovered elements, type \"list\".")
+        print("If you want to display only a specific group, type \"group\", and then enter the group name.\n")
+        print("In order to obtain new elements, type \"fuse\", then enter the two elements that you want to fuse.\n")
+        print("To stop the program, type \"quit\", your progress will be saved into a savefile.")
 
     elif command in {"quit", "close", "leave"}:
         # Handle program exit
@@ -264,9 +277,9 @@ while not quit:
             print(i)
             i.reveal()
     
-    print("\n")
+    print("")
 
 # Save data into a savefile
-with open("ElementSave.txt", "w") as f:
+with open("Elemental.save", "w") as f:
     for i in ElementsCreated:
-        f.write(str(i) + "\n")
+        f.write(encode(str(i) + "\n"))
