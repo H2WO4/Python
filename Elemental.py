@@ -256,9 +256,11 @@ while not quit:
         # Handle fusing elements
         try:
             # Gather two text inputs and verify their validity
-            if not (reactif1 := eval(input("\nChoose a first element : ").title())) in ElementsCreated:
+            reactif1 = eval(input("\nChoose a first element : ").title())
+            if not reactif1 in ElementsCreated:
                 raise IndexError
-            if not (reactif2 := eval(input("Choose a second element : ").title())) in ElementsCreated:
+            reactif2 = eval(input("\nChoose a second element : ").title())
+            if not reactif2 in ElementsCreated:
                 raise IndexError
 
             # Put them in a single variable and evaluate it to transform it into a set
