@@ -81,22 +81,22 @@ for k in i:
 w = Writer(image.width, image.height, greyscale=False)
 
 # Write each of the images
-f = open("{}R.png".format(textImage), "wb")
-w.write(f, outputR)
+with open("{}R.png".format(textImage), "wb") as f:
+    w.write(f, outputR)
 
-f = open("{}B.png".format(textImage), "wb")
-w.write(f, outputB)
+with open("{}B.png".format(textImage), "wb") as f:
+    w.write(f, outputB)
 
-f = open("{}G.png".format(textImage), "wb")
-w.write(f, outputG)
+with open("{}G.png".format(textImage), "wb") as f:
+    w.write(f, outputG)
 
-f = open("{}M.png".format(textImage), "wb")
-w.write(f, outputM)
+with open("{}M.png".format(textImage), "wb") as f:
+    w.write(f, outputM)
 
-f = open("{}Y.png".format(textImage), "wb")
-w.write(f, outputY)
+with open("{}Y.png".format(textImage), "wb") as f:
+    w.write(f, outputY)
 
-f = open("{}C.png".format(textImage), "wb")
-w.write(f, outputC)
+with open("{}C.png".format(textImage), "wb") as f:
+    w.write(f, outputC)
 
 print("RGB Separation Complete")

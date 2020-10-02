@@ -3,7 +3,8 @@
 class Element:
     """
     The Element object is used to represent a singular element\n
-    It contains information about its name, in which group it belongs, its state and the list of its recipes
+    It contains information about its name, in which group it belongs,
+    its state and the list of its recipes
     """
 
     def __init__(self, name, recipes, group = None, revealed = False):
@@ -16,14 +17,14 @@ class Element:
 
         # Init - Adding itself to lists for future indexing
         Elements.append(self)
-        if group != None:
+        if group is not None:
             group.elements.append(self)
-        
+
         if revealed:
             ElementsCreated.append(self)
         else:
             ElementsNotCreated.append(self)
-    
+
     def __str__(self):
         """ Return the name value of the object """
         # Overload the 'str()' operator to return the element's name
@@ -33,33 +34,33 @@ class Element:
         """ Check if a set of two Element objects is present within a third Element recipes list """
         # Overload of the 'in' operator to perform inclusion logic check during element fusion
         if type(other) != set:
-            raise TypeError
+            return NotImplemented
 
         # Search for the set in the elements recipes and return a boolean
         if other in self.recipes:
             return True
         return False
-    
+
     def __add__(self, other):
         """ Add two Elements object to themselves, putting them into an unordered set """
         # Overload of the '+' operator to set up element fusion
         if type(other) != Element:
-            raise TypeError
+            return NotImplemented
 
         # Return a set containing the two elements
         return {self, other}
-    
+
     def __lt__(self, other):
         """ Compare two Element object, using their name values """
         # Overload of the '<' operator to allow list sorting
         if type(other) != Element:
-            raise TypeError
-        
+            return NotImplemented
+
         # Compare their name values and return a boolean
         if self.name < other.name:
             return True
         return False
-    
+
     def reveal(self):
         """ Reveal this object, making it usable in-game """
         # Manages lists changes when a new element is revealed
@@ -68,9 +69,9 @@ class Element:
             ElementsCreated.append(self)
             ElementsCreated.sort()
             ElementsNotCreated.pop(ElementsNotCreated.index(self))
-        
+
         return None
-    
+
     def initialize(self):
         """ Initialize the recipes list of the object """
         self.recipes = eval(self.recipes)
@@ -92,7 +93,7 @@ class Group:
 
         # Init - Adding itself to lists for future indexing
         Groups.append(self)
-    
+
     def __str__(self):
         """ Return the name value of the object """
         # Overload the 'str()' operator to return the group's name
@@ -101,12 +102,13 @@ class Group:
 # Defining two functions to allow encoding and decoding for the save file
 def encode(strToEncode):
     """ Take a string and return its encoded version """
-    # Uses a single-line for instruction to manually convert each character to hexadecimal and apply a sequence of operations
+    # Uses a single-line for instruction to manually convert each character to
+    # hexadecimal and apply a sequence of operations
     return ''.join([str(hex((ord(n) * 2 + 3) * 7)) for n in strToEncode])
 
 def decode(strToDecode):
     """ Take an encoded string and return its original """
-    # Uses a single-line for instruction to manually convert each character back to ASCII
+    # Uses a single-line for instruction to manually convert each character back to Unicode
     return chr((int(strToDecode, 16) // 7 - 3) // 2)
 
 # Defining lists to allow indexing of all elements/groups
@@ -137,7 +139,7 @@ Energy = Element("Energy", "[]", Primus, True)
 Void = Element("Void", "[]", Primus, True)
 
 # 1st Level Compounds
-Plasma = Element("Plasma", "[Fire + Energy]", Ignis)
+Plasma = Element("Plasma", "[Fire + 3]", Ignis)
 Electricity = Element("Electricity", "[Air + Energy]", Fulgur)
 Lava = Element("Lava", "[Fire + Earth]", Ignis)
 Steam = Element("Steam", "[Air + Water]", Aer)
@@ -147,6 +149,7 @@ Stone = Element("Stone", "[Earth + Earth]", Terra)
 Sea = Element("Sea", "[Water + Water]", Aqua)
 Wave = Element("Wave", "[Water + Energy]", Primus)
 Wind = Element("Wind", "[Air + Energy]", Aer)
+Space = Element("Space", "[Void + Energy]", Primus)
 
 # 2nd and Higher Level General Compounds
 Sound = Element("Sound", "[Air + Wave]", Aer)
@@ -154,6 +157,7 @@ Ocean = Element("Ocean", "[Sea + Sea]", Aqua)
 Salt = Element("Salt", "[Sea + Heat]", Terra)
 Tsunami = Element("Tsunami", "[Sea + Wave]", Aqua)
 Gravity = Element("Gravity", "[Pressure + Planet]", Primus)
+Time = Element("Time", "[Gravity + Space]", Primus)
 
 # Celestial Series
 Cloud = Element("Cloud", "[Steam + Steam]", Aer)
@@ -226,34 +230,42 @@ except:
 
 """ Main game loop """
 
+# Display welcome text
 print("Welcome to Elemental !\n")
 print("The rules are simple :\nUse all the elements to your disposition to create new ones.")
 print("For more detailed help, type \"help\".\n")
 
-quit = False
-while not quit:
+leave = False
+while not leave:
 
     command = input().lower()
 
     if command in {"group", "groups"}:
         # Print all elements in a group
+
         print("\nWhich group do you want to look at?")
         for i in Groups:
             # Print every group
             print(i)
-        
-        command = eval(input("\n").title())
 
-        if command in Groups:
-            print("\n{} Group:".format(str(command)))
+        try:
+            command = eval(input("\n").title())
 
-            for i in command.elements:
-                # Enumerate every revealed element in the group
-                if i.revealed:
-                    print(str(i))
+            if command in Groups:
+                print("\n{} Group:".format(str(command)))
+
+                for i in command.elements:
+                    # Enumerate every revealed element in the group
+                    if i.revealed:
+                        print(str(i))
+
+        # Error handling for incorrect name for group
+        except NameError:
+            print("Incorrect group name!")
                 
     elif command in {"fuse", "fusion", "mix"}:
         # Handle fusing elements
+
         try:
             # Gather two text inputs and verify their validity
             reactif1 = eval(input("\nChoose a first element : ").title())
@@ -276,39 +288,44 @@ while not quit:
                     i.reveal()
             if not newElement:
                 print("\nNo new element created...")
-        
+
         # Error handling for incorrect/invalid element name
         except NameError:
             print("\nInexisting element name!")
         except IndexError:
             print("\nNon-Discovered element!")
-    
+
     elif command in {"list"}:
         # Print all currently revealed elements
+
         print("\nElement list :")
         for i in ElementsCreated:
             print(i)
-    
+
     elif command in {"help"}:
         # Display help text
+
         print("\nIn order to obtain a complete list of discovered elements, type \"list\".")
         print("If you want to display only a specific group, type \"group\", and then enter the group name.\n")
         print("In order to obtain new elements, type \"fuse\", then enter the two elements that you want to fuse.\n")
-        print("To stop the program, type \"quit\", your progress will be saved into a savefile.")
+        print("To stop the program, type \"leave\", your progress will be saved into a savefile.")
 
-    elif command in {"quit", "close", "leave"}:
+    elif command in {"leave", "close", "leave"}:
         # Handle program exit
-        quit = True
-    
+
+        leave = True
+
     elif command in {"reveal"}:
         # Testing instruction - Reveal all elements
+
         ElementsNotCreatedCopy = []
         for i in ElementsNotCreated:
             ElementsNotCreatedCopy.append(i)
         for i in ElementsNotCreatedCopy:
             print(i)
             i.reveal()
-    
+
+    # Adds a newline between user instructions
     print("")
 
 # Save data into a savefile
