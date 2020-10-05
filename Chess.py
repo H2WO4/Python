@@ -15,8 +15,10 @@ class Board:
                 self.grid[i].append(Blank())
 
     def __str__(self):
-        string = ""
-        for i in range(len(self.grid)).__reversed__():
+        string = "  " + "".join([str(i) + " " for i in range(1, self.size + 1)]) + "\n"
+        
+        for i in range(self.size):
+            string += chr(65 + i) + " "
             for j in range(len(self.grid[i])):
                 string += str(self.grid[i][j]) + " "
             string += "\n"
@@ -156,3 +158,5 @@ class Knight(Piece):
 MainBoard = Board(8)
 MainBoard.initialize()
 print(MainBoard)
+
+input()
