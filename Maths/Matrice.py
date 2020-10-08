@@ -80,6 +80,17 @@ class Matrix:
         return Matrix(output)
     
     def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, float):
+            output = []
+            for i in range(self.lines):
+                output.append([])
+                for j in range(len(self.value[i])):
+                    output[i].append(self.value[i][j] * other)
+            return Matrix(output)
+        else:
+            return NotImplemented
+
+    def __matmul__(self, other):
         if isinstance(other, Matrix):
             if self.columns == other.lines:
                 output = []
@@ -93,22 +104,17 @@ class Matrix:
                 return Matrix(output)
             else:
                 raise DimensionError("Different numbers of lines and columns in operands matrices")
-        elif isinstance(other, int) or isinstance(other, float):
-            output = []
-            for i in range(self.lines):
-                output.append([])
-                for j in range(len(self.value[i])):
-                    output[i].append(self.value[i][j] * other)
-            return Matrix(output)
+        else:
+            return NotImplemented
 
-    def __rmul__(self, other):
-        return self*other
+    def __rmatmul__(self, other):
+        return self@other
 
-    def __imul__(self, other):
-        return self*other
+    def __imatmul__(self, other):
+        return self@other
 
-    def __rimul__(self, other):
-        return self*other
+    def __rimatmul__(self, other):
+        return self@other
     
     def __truediv__(self, other):
         return self*(1/other)
@@ -134,7 +140,7 @@ class Matrix:
             else:
                 raise DimensionError("Different numbers of lines and columns in operands matrices")
         else:
-            raise TypeError
+            return NotImplemented
     
     def kronecker(self, other):
         if isinstance(other, Matrix):
@@ -155,10 +161,10 @@ class Matrix:
             return Matrix(output)
 
         else:
-            return TypeError
+            return NotImplemented
 
     def __neg__(self):
-        return self.__mul__(-1)
+        return self*(-1)
 
     def augment(self, other):
         if isinstance(other, Matrix):
@@ -171,7 +177,7 @@ class Matrix:
             else:
                 raise DimensionError("Different numbers of lines and columns in operands matrices")
         else:
-            raise TypeError
+            return NotImplemented
 
 class SquareMatrix(Matrix):
     def __init__(self, value):
@@ -265,5 +271,5 @@ def randomMatrix(lines, columns, min, max):
 A = Matrix([[2,3],[5,7]])
 B = Matrix([[6,2],[4,0]])
 
-print(A*B)
+print(A@B)
 print(A.hamadard(B))

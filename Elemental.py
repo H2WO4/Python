@@ -112,16 +112,6 @@ def decode(strToDecode):
     return chr((int(strToDecode, 16) // 7 - 3) // 2)
 
 
-# Defines two additionals functions to further encrypt to savefile
-
-def encrypt(strToEncrypt):
-    output = ""
-    for i in strToEncrypt:
-        output += chr(ord(i)*2)
-
-    return output
-
-
 
 # Defining lists to allow indexing of all elements/groups
 Elements = []
@@ -230,7 +220,7 @@ try:
     with open("Elemental.save", "r") as f:
         # Read the save file and decode it
         toRead = f.read().split("0x")[1:]
-        for j in ''.join([decrypt(decode(i)) for i in toRead]).split("\n")[:-1]:
+        for j in ''.join([decode(i) for i in toRead]).split("\n")[:-1]:
             # Reveal each element one by one
             eval(j.replace(" ", "")).reveal()
 except FileNotFoundError:
@@ -344,5 +334,5 @@ while not leave:
 with open("Elemental.save", "wt") as f:
     for i in ElementsCreated:
         # Write each encoded element into the savefile
-        toWrite = encrypt(encode(str(i) + "\n"))
+        toWrite = encode(str(i) + "\n")
         f.write(toWrite)
