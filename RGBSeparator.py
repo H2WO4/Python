@@ -27,7 +27,6 @@ if len(i) > (image.width * 3):
 
 for k in i:
     # Iterate through the lines
-
     outputR.append([])
     outputG.append([])
     outputB.append([])
@@ -38,7 +37,6 @@ for k in i:
     j = 0
     for l in k:
         # Iterate through the columns
-
         # Check based on the index, which color channel is being examined, and act accordingly
         if j%m == 0:
             outputR[n].append(l)
@@ -72,9 +70,7 @@ for k in i:
             outputY[n].append(l)
             outputC[n].append(l)
 
-
-        j += 1
-    
+        j += 1    
     n += 1
 
 # Set up the Writer object for creating new images out of the lists
@@ -83,19 +79,14 @@ w = Writer(image.width, image.height, greyscale=False)
 # Write each of the images
 with open("{}R.png".format(textImage), "wb") as f:
     w.write(f, outputR)
-
 with open("{}B.png".format(textImage), "wb") as f:
     w.write(f, outputB)
-
 with open("{}G.png".format(textImage), "wb") as f:
     w.write(f, outputG)
-
 with open("{}M.png".format(textImage), "wb") as f:
     w.write(f, outputM)
-
 with open("{}Y.png".format(textImage), "wb") as f:
     w.write(f, outputY)
-
 with open("{}C.png".format(textImage), "wb") as f:
     w.write(f, outputC)
 

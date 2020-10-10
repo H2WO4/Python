@@ -15,7 +15,7 @@ class Board:
                 self.grid[i].append(Blank())
 
     def __str__(self):
-        string = "  " + "".join([str(i) + " " for i in range(1, self.size + 1)]) + "\n"
+        string = "  " + " ".join([str(i) for i in range(1, self.size + 1)]) + "\n"
         
         for i in range(self.size):
             string += chr(65 + i) + " "
@@ -26,7 +26,7 @@ class Board:
         return string
 
     def initialize(self):
-        """ Initialize a 8-size board to classic chess disposition """
+        """ Initialize an 8-size board to classic chess disposition """
         if self.size == 8:
             for i in range(8):
                 self.grid[1][i], self.grid[6][i] = Pawn(True), Pawn(False)
