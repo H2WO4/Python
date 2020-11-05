@@ -4,56 +4,59 @@ from ItemChestData import stats, materials, types, attributes, qualities
 print("Dans le coffre se trouve ...\n")
 
 while True:
-    # Chooses Ressources
+    # On prend des paramètres aléatoires dans les listes.
     itemType = types[randint(0, len(types) - 1)]
     itemAttribute = attributes[randint(0, len(attributes) - 1)]
     itemMaterial = materials[randint(0, len(materials) - 1)]
-    item = itemType.name + " " + itemMaterial.name
 
-    # Applies Male/Female/Plural -> Type
+    # On commence à former le nom de l'objet
+    title = itemType.name + " " + itemMaterial.name
+
+    # On change le nom du matériau suivant masculin/féminin/pluriel
     if itemType.gender == 1 and itemMaterial.feminine == 1:
-        item += "e"
+        title += "e"
     elif itemType.gender == 1 and itemMaterial.feminine == 2:
-        item = item[:-1] + "se"
+        title = title[:-1] + "se"
     elif itemType.gender == 1 and itemMaterial.feminine == 3:
-        item = item[:-3] + "rice"
+        title = title[:-3] + "rice"
     elif itemType.gender == 1 and itemMaterial.feminine == 4:
-        item += "le"
+        title += "le"
     elif itemType.gender == 3 and itemMaterial.feminine == 1:
-        item = item[:-1] + "es"
+        title = title[:-1] + "es"
     elif itemType.gender == 3 and itemMaterial.feminine == 2:
-        item = item[:-3] + "ses"
+        title = title[:-3] + "ses"
     elif itemType.gender == 3 and itemMaterial.feminine == 3:
-        item = item[:-3] + "rices"
+        title = title[:-3] + "rices"
     elif itemType.gender == 3 and itemMaterial.feminine == 4:
-        item += "les"
+        title += "les"
     elif itemType.gender >= 2 and itemMaterial.feminine == -1:
-        item += "s"
+        title += "s"
 
-    item += " " + itemAttribute.name
+    # On ajoute le nom de l'attribut
+    title += " " + itemAttribute.name
 
-    # Applies Male/Female/Plural -> Attribute
+    # On change le nom de l'attribut suivant masculin/féminin/pluriel
     if itemType.gender == 1 and itemAttribute.feminine == 1:
-        item += "e"
+        title += "e"
     elif itemType.gender == 1 and itemAttribute.feminine == 2: 
-        item = item[:-1] + "se"
+        title = title[:-1] + "se"
     elif itemType.gender == 1 and itemAttribute.feminine == 3: 
-        item = item[:-3] + "rice"
+        title = title[:-3] + "rice"
     elif itemType.gender == 1 and itemAttribute.feminine == 4: 
-        item += "le"
+        title += "le"
     elif itemType.gender == 3 and itemAttribute.feminine == 1: 
-        item = item[:-1] + "es"
+        title = title[:-1] + "es"
     elif itemType.gender == 3 and itemAttribute.feminine == 2: 
-        item = item[:-3] + "ses"
+        title = title[:-3] + "ses"
     elif itemType.gender == 3 and itemAttribute.feminine == 3: 
-        item = item[:-3] + "rices"
+        title = title[:-3] + "rices"
     elif itemType.gender == 3 and itemAttribute.feminine == 4: 
-        item += "les"
+        title += "les"
     elif itemType.gender >= 2 and itemAttribute.plural == 1:
-        item += "s"
+        title += "s"
 
-    # Finishes the name of the item and add quality
-    if itemAttribute.name == "aléatoire": # Special "aléatoire" case
+    # On gère l'ajout de la qualité de l'objet
+    if itemAttribute.name == "aléatoire": # Cas special pour "aléatoire"
         qualityNumber = itemMaterial.quality + itemAttribute.qualityModifier + randint(-5, 5)
         qualityNumber = max({qualityNumber, 0})
         qualityNumber = min({qualityNumber, 12})
@@ -64,165 +67,92 @@ while True:
 
     quality = qualities[qualityNumber][randint(0, len(qualities[qualityNumber]) - 1)]
 
-    item += "\n" + quality.name
+    # On l'ajoute au nom
+    item = quality.name
 
-    # Calculate the 1st stat
-    stat1 = itemType.stat
-    stat1type = -1
-    if stat1.name == "Random":
-        stat1 = stats[randint(0, 2)]
+    # On calcule les 3 premières stats
+    for i in range(3):
+        # On prend la stat
+        stat = [itemType.stat, itemMaterial.stat, itemAttribute.stat][i]
+        statType = -1
 
-    if stat1.type == "Dual":
-        if randint(0,1):
-            statMagnitude1 = round(randint(3, 10) * quality.multiplier * stat1.modifier * itemType.statModifier + randint(-2, 3))
+        # Gestion des cas "Copy" et "Random"
+        if stat.name == "Copy":
+            stat = itemType.stat
+        if stat.name == "Random":
+            stat = stats[randint(0, 2)]
+
+        # On choisit si la stat est relative (%) ou flat
+        statMagnitude = round(randint(3, 10) * quality.multiplier *  stat.modifier * [itemType.statModifier, itemMaterial.statModifier, itemAttribute.statModifier][i] + randint(-4, 6))
+        if stat.type == "Dual":
+            if randint(0,1):
+                statMagnitude *= 2
+                statType = 1  
+        if stat.type == "Relative":
+            statMagnitude *= 2
+            statType = 1
+        if stat.type == "FixedFlat":
+            statMagnitude = stat.modifier
+        if stat.type == "FixedRelative":
+            statType = 1
+            statMagnitude = stat.modifier
+
+        # On applique le signe
+        if statMagnitude > 0:
+            statMagnitude = "+ " + str(statMagnitude)
         else:
-            stat1type = 1
-            statMagnitude1 = round(randint(3, 10) * quality.multiplier *  stat1.modifier * itemType.statModifier * 2 + randint(-4, 6))
-    if stat1.type == "Flat":
-        statMagnitude1 = round(randint(3, 10) * quality.multiplier * stat1.modifier * itemType.statModifier + randint(-2, 3))
-    if stat1.type == "Relative":
-        stat1type = 1
-        statMagnitude1 = round(randint(3, 10) * quality.multiplier *  stat1.modifier * itemType.statModifier * 2 + randint(-4, 6))
-    if stat1.type == "FixedFlat":
-        statMagnitude1 = stat1.modifier
-    if stat1.type == "FixedRelative":
-        stat1type = 1
-        statMagnitude1 = stat1.modifier
+            statMagnitude = "- " + str(statMagnitude * -1)
 
-    # Applies the +/-
-    if statMagnitude1 > 0:
-        statMagnitude1 = "+ " + str(statMagnitude1)
-    else:
-        statMagnitude1 = "- " + str(statMagnitude1 * -1)
+        # On gère le cas spécial "Null"
+        if stat.name == "Null":
+            statMagnitude = 0
+        
+        # On rajoute la stat au message
+        if not(statMagnitude == 0):
+            if statType == 1:
+                item += " \n" + statMagnitude + "%" + " " + stat.name
+            else:
+                item += " \n" + statMagnitude + " " + stat.name
 
-    # Applies the stat in the message
-    if stat1.name == "Null":
-        statMagnitude1 = 0
-    if not(statMagnitude1 == 0):
-        if stat1type == 1:
-            item += " \n" + statMagnitude1 + "%" + " " + stat1.name
-        else:
-            item += " \n" + statMagnitude1 + " " + stat1.name
-
-    # Calculate the 2nd stat
-    stat2 = itemMaterial.stat
-    stat2type = -1
-    if stat2.name == "Copy":
-        stat2 = itemType.stat
-    if stat2.name == "Random":
-        stat2 = stats[randint(0, 2)]
-    
-    if stat2.type == "Dual":
-        if randint(0,1):
-            statMagnitude2 = round(randint(3, 10) * quality.multiplier * stat2.modifier * itemMaterial.statModifier + randint(-2, 3))
-        else:
-            stat2type = 1
-            statMagnitude2 = round(randint(3, 10) * quality.multiplier *  stat2.modifier * itemMaterial.statModifier * 2 + randint(-4, 6))
-    if stat2.type == "Flat":
-        statMagnitude2 = round(randint(3, 10) * quality.multiplier * stat2.modifier * itemMaterial.statModifier + randint(-2, 3))
-    if stat2.type == "Relative":
-        stat2type = 1
-        statMagnitude2 = round(randint(3, 10) * quality.multiplier *  stat2.modifier * itemMaterial.statModifier * 2 + randint(-4, 6))
-    if stat2.type == "FixedFlat":
-        statMagnitude2 = stat2.modifier
-    if stat2.type == "FixedRelative":
-        stat2type = 1
-        statMagnitude2 = stat2.modifier
-
-    # Applies the +/-
-    if statMagnitude2 > 0:
-        statMagnitude2 = "+ " + str(statMagnitude2)
-    else:
-        statMagnitude2 = "- " + str(statMagnitude2 * -1)
-
-    # Applies the stat in the message
-    if stat2.name == "Null":
-        statMagnitude2 = 0
-    if not(statMagnitude2 == 0):
-        if stat2type == 1:
-            item += " \n" + statMagnitude2 + "%" + " " + stat2.name
-        else:
-            item += " \n" + statMagnitude2 + " " + stat2.name
-
-    # Calculate the 3rd stat
-    stat3 = itemAttribute.stat
-    stat3type = -1
-    if stat3.name == "Copy":
-        stat3 = itemType.stat
-    if stat3.name == "Random":
-        stat3 = stats[randint(0, 2)]
-
-    if stat3.type == "Dual":
-        if randint(0,1):
-            statMagnitude3 = round(randint(3, 10) * quality.multiplier * stat3.modifier * itemAttribute.statModifier + randint(-2, 3))
-        else:
-            stat3type = 1
-            statMagnitude3 = round(randint(3, 10) * quality.multiplier *  stat3.modifier * itemAttribute.statModifier * 2 + randint(-4, 6))
-    if stat3.type == "Flat":
-        statMagnitude3 = round(randint(3, 10) * quality.multiplier * stat3.modifier * itemAttribute.statModifier + randint(-2, 3))
-    if stat3.type == "Relative":
-        stat3type = 1
-        statMagnitude3 = round(randint(3, 10) * quality.multiplier *  stat3.modifier * itemAttribute.statModifier * 2 + randint(-4, 6))
-    if stat3.type == "FixedFlat":
-        statMagnitude3 = stat3.modifier
-    if stat3.type == "FixedRelative":
-        stat3type = 1
-        statMagnitude3 = stat3.modifier
-
-    # Applies the +/-
-    if statMagnitude3 > 0:
-        statMagnitude3 = "+ " + str(statMagnitude3)
-    else:
-        statMagnitude3 = "- " + str(statMagnitude3 * -1)
-
-    # Applies the stat in the message
-    if stat3.name == "Null":
-        statMagnitude3 = 0
-    if not(statMagnitude3 == 0):
-        if stat3type == 1:
-            item += " \n" + statMagnitude3 + "%" + " " + stat3.name
-        else:
-            item += " \n" + statMagnitude3 + " " + stat3.name
-
-    # Calculate the other stats
+    # On calcule toutes les autres stats
     if quality.name == "Démoniaque":
-        quality.multiplier = -6 # "Démoniaque" case
+        quality.multiplier = -6 # On gère le cas spécial de la qualité "Démoniaque"
 
     for i in range(quality.totalStats):
-        statN = stats[randint(0, len(stats) - 1)]
-        statNtype = 0
-        if statN.type == "Dual":
+        stat = stats[randint(0, len(stats) - 1)]
+        statType = 0
+
+        # On choisit si la stat est relative (%) ou flat
+        statMagnitude = round(randint(3, 10) * quality.multiplier * stat.modifier + randint(-2, 3))
+        if stat.type == "Dual":
             if randint(0,1):
-                statMagnitudeN = round(randint(3, 10) * quality.multiplier * statN.modifier + randint(-2, 3))
-            else:
-                statNtype = 1
-                statMagnitudeN = round(randint(3, 10) * quality.multiplier *  statN.modifier * 2 + randint(-4, 6))
-        if statN.type == "Flat":
-            statMagnitudeN = round(randint(3, 10) * quality.multiplier * statN.modifier + randint(-2, 3))
-        if statN.type == "Relative":
-            statNtype = 1
-            statMagnitudeN = round(randint(3, 10) * quality.multiplier *  statN.modifier * 2 + randint(-4, 6))
-        if statN.type == "FixedFlat":
-            statMagnitudeN = statN.modifier
-        if statN.type == "FixedRelative":
-            statNtype = 1
-            statMagnitudeN = statN.modifier
+                statType = 1
+                statMagnitude *= 2
+        if stat.type == "Relative":
+            statType = 1
+            statMagnitude *= 2
+        if stat.type == "FixedFlat":
+            statMagnitude = stat.modifier
+        if stat.type == "FixedRelative":
+            statType = 1
+            statMagnitude = stat.modifier
 
-        # Applies the +/-
-        if statMagnitudeN > 0:
-            statMagnitudeN = "+ " + str(statMagnitudeN)
+        # On applique le signe
+        if statMagnitude > 0:
+            statMagnitude = "+ " + str(statMagnitude)
         else:
-            statMagnitudeN = "- " + str(statMagnitudeN * -1)
+            statMagnitude = "- " + str(statMagnitude * -1)
 
-        # Applies the stat in the message
-        if not(statMagnitudeN == 0):
-            if statNtype == 1:
-                item += " \n" + statMagnitudeN + "%" + " " + statN.name
+        # On rajoute la stat au message
+        if not(statMagnitude == 0):
+            if statType == 1:
+                item += " \n" + statMagnitude + "%" + " " + stat.name
             else:
-                item += " \n" + statMagnitudeN + " " + statN.name
+                item += " \n" + statMagnitude + " " + stat.name
 
+    # On remet "Démoniaque" à la normale
     if quality.name == "Démoniaque":
         quality.multiplier = 16
 
-    print(item)
+    print("{}:\n{}".format(title, item))
     input()

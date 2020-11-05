@@ -309,7 +309,7 @@ while not leave:
 
         print("\nIn order to obtain a complete list of discovered elements, type \"list\".")
         print("If you want to display only a specific group, type \"group\", and then enter the group name.\n")
-        print("In order to obtain new elements, type \"fuse\", then enter the two elements that you want to fuse.\n")
+        print("In order to obtain new elements, type \"fuse\", then enter the two elements that you want to try fusing.\n")
         print("To stop the program, type \"leave\", your progress will be saved into a savefile.")
 
     elif command in {"leave", "close", "leave"}:
