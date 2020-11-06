@@ -100,6 +100,8 @@ Cookies = Currency("Cookies")
 Grandma = Building("Grandma", "A nice grandma that will bake some cookies.", (lambda n: 10 * (1.3 ** n), "Cookies"), 3, Cookies = (lambda n, m: n * (1 + m/2), "self.count", "Grandpa.count"))
 Grandpa = Building("Grandpa", "This nice grandpa will help grandma to bake cookies", (lambda n: 50 * (1.4 ** n), "Cookies"), 0)
 
+Factory = Building("Factory", "Now you're thinking with mass-production!")
+
 
 
 """ Main Game Loop """
@@ -125,5 +127,10 @@ while not leave:
             exec("{}.buy({})".format(command, n))
 
 
+    if command in {"check", "status"}:
+        displayCurrencies()
+        displayBuildings()
+
+
     if command in {"cheat"}:
-        Cookies.value *= 10
+        Cookies.value *= 30
