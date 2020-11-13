@@ -39,14 +39,24 @@ except ZeroDivisionError:
 """ GUI """
 
 def selectGroup1(selection):
-    print(selection)
+    listboxElements1 = tk.StringVar(value=list([j for j in [Groups[i] for i in Groups][selection[0]].elements if j.revealed]))
+    listElements1["listvariable"] = listboxElements1
 
 
 def selectGroup2(selection):
-    print(selection)
+    listboxElements2 = tk.StringVar(value=list([j for j in [Groups[i] for i in Groups][selection[0]].elements if j.revealed]))
+    listElements2["listvariable"] = listboxElements2
 
+global element1, element2
+element1 = 0
+element2 = 0
 def selectElement(selection1, selection2):
-    fusionPreview["text"] = "{} + {}".format(list(Elements)[selection1], list(Elements)[selection2])
+    global element1, element2
+    if len(selection1) > 0:
+        element1 = selection1[0]
+    if len(selection2) > 0:
+        element2 = selection2[0]
+    fusionPreview["text"] = "{} + {}".format(list(Elements)[element1], list(Elements)[element2])
 
 
 
@@ -65,7 +75,7 @@ listGroups1.bind("<Double-1>", lambda e: selectGroup1(listGroups1.curselection()
 listboxElements1 = tk.StringVar(value=list(Elements))
 listElements1 = tk.Listbox(listvariable=listboxElements1, height=len(Groups))
 listElements1.grid(row=1, column=1)
-listElements1.bind("<Double-1>", lambda e: selectElement(listElements1.curselection()[-1], listElements2.curselection()[-1]))
+listElements1.bind("<Double-1>", lambda e: selectElement(listElements1.curselection(), listElements2.curselection()))
 
 
 listboxGroups2 = tk.StringVar(value=list(Groups))
@@ -76,7 +86,7 @@ listGroups2.bind("<Double-1>", lambda e: selectGroup2(listGroups2.curselection()
 listboxElements2 = tk.StringVar(value=list(Elements))
 listElements2 = tk.Listbox(listvariable=listboxElements2, height=len(Groups))
 listElements2.grid(row=1, column=3)
-listElements2.bind("<Double-1>", lambda e: selectElement(listElements1.curselection()[-1], listElements2.curselection()[-1]))
+listElements2.bind("<Double-1>", lambda e: selectElement(listElements1.curselection(), listElements2.curselection()))
 
 
 
