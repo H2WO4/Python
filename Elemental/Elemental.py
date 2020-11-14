@@ -38,16 +38,40 @@ except ZeroDivisionError:
 
 """ GUI """
 
+main = tk.Tk()
+main.title("Elemental")
+title = tk.Label(text="Elemental")
+title.grid(row=0, column=2)
+
+
+
+
+console = tk.Frame(borderwidth=3, relief="sunken", background="white")
+console.grid(row=2, column=0, columnspan=5, sticky="news")
+
+logText = ["", "", "", ""]
+consoleText = tk.Label(master=console, text="\n".join(logText[-4:-1] + [logText[-1]]), background="white")
+consoleText.pack()
+
+
+
+
+group1 = list(Groups)[0]
+group2 = list(Groups)[0]
 def selectGroup1(selection):
-    listboxElements1 = tk.StringVar(value=list([j for j in [Groups[i] for i in Groups][selection[0]].elements if j.revealed]))
+    global group1, logText, consoleText
+    group1 = Groups[list(Groups)[selection[0]]]
+    listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed]))
     listElements1["listvariable"] = listboxElements1
 
 
 def selectGroup2(selection):
-    listboxElements2 = tk.StringVar(value=list([j for j in [Groups[i] for i in Groups][selection[0]].elements if j.revealed]))
+    global group2
+    group2 = Groups[list(Groups)[selection[0]]]
+    listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed]))
     listElements2["listvariable"] = listboxElements2
 
-global element1, element2
+
 element1 = 0
 element2 = 0
 def selectElement(selection1, selection2):
@@ -56,54 +80,66 @@ def selectElement(selection1, selection2):
         element1 = selection1[0]
     if len(selection2) > 0:
         element2 = selection2[0]
-    fusionPreview["text"] = "{} + {}".format(list(Elements)[element1], list(Elements)[element2])
-
-
-
-main = tk.Tk()
-main.title("Elemental")
-title = tk.Label(text="Elemental")
-title.grid(row=0, column=2)
-
+    spacesToAdd1 = max([len(i) for i in Elements]) - len(group1.elements[element1].name) + 1
+    spacesToAdd2 = max([len(i) for i in Elements]) - len(group2.elements[element2].name) + 1
+    fusionPreview["text"] = " " * spacesToAdd1 + "{} + {}".format(group1.elements[element1], group2.elements[element2]) + " " * spacesToAdd2
 
 
 listboxGroups1 = tk.StringVar(value=list(Groups))
-listGroups1 = tk.Listbox(listvariable=listboxGroups1, height=len(Groups))
-listGroups1.grid(row=1, column=0)
+listGroups1 = tk.Listbox(listvariable=listboxGroups1)
+listGroups1.grid(row=1, column=0, sticky="news")
 listGroups1.bind("<Double-1>", lambda e: selectGroup1(listGroups1.curselection()))
 
-listboxElements1 = tk.StringVar(value=list(Elements))
-listElements1 = tk.Listbox(listvariable=listboxElements1, height=len(Groups))
-listElements1.grid(row=1, column=1)
+listElements1 = tk.Listbox()
+listElements1.grid(row=1, column=1, sticky="news")
 listElements1.bind("<Double-1>", lambda e: selectElement(listElements1.curselection(), listElements2.curselection()))
+selectGroup1((0, ))
 
 
 listboxGroups2 = tk.StringVar(value=list(Groups))
-listGroups2 = tk.Listbox(listvariable=listboxGroups2, height=len(Groups))
-listGroups2.grid(row=1, column=4)
+listGroups2 = tk.Listbox(listvariable=listboxGroups2)
+listGroups2.grid(row=1, column=4, sticky="news")
 listGroups2.bind("<Double-1>", lambda e: selectGroup2(listGroups2.curselection()))
 
-listboxElements2 = tk.StringVar(value=list(Elements))
-listElements2 = tk.Listbox(listvariable=listboxElements2, height=len(Groups))
-listElements2.grid(row=1, column=3)
+listElements2 = tk.Listbox()
+listElements2.grid(row=1, column=3, sticky="news")
 listElements2.bind("<Double-1>", lambda e: selectElement(listElements1.curselection(), listElements2.curselection()))
+selectGroup2((0, ))
 
+
+
+
+def fuse():
+    global group1, group2, element1, element2
+    # Put them in a single variable and evaluate it to transform it into a set
+    fusion = {group1.elements[element1], group2.elements[element2]}
+    newElement = False
+    # Iterate through the entire element list to find a match
+    for i in list(ElementsNotCreated):
+        if fusion in ElementsNotCreated[i]:
+            # Reveal the created element
+            newElement = True
+            print("\nCreated Element {}!".format(str(ElementsNotCreated[i])))
+            ElementsNotCreated[i].reveal()
+    if not newElement:
+        print("\nNo new element created...")
 
 
 fusionGroup = tk.Frame()
 fusionGroup.grid(row=1, column=2)
 
-fusionPreview = tk.Label(text="Air + Air", master=fusionGroup)
+spacesToAdd = max([len(i) for i in Elements]) + 1
+fusionPreview = tk.Label(text=" " * spacesToAdd + " + " + " " * spacesToAdd, master=fusionGroup, font="TkFixedFont")
 fusionPreview.pack()
 
-fusionButton = tk.Button(text="Fuse", master=fusionGroup)
+fusionButton = tk.Button(text="Fuse", master=fusionGroup, command=fuse)
+
 fusionButton.pack()
 
 
-
-rowWeights = [0, 1]
+rowWeights = [0, 1, 2]
 [main.columnconfigure(i, weight=1) for i in range(5)]
-[main.rowconfigure(i, weight=rowWeights[i]) for i in range(2)]
+[main.rowconfigure(i, weight=rowWeights[i]) for i in range(3)]
 
 
 main.mainloop()
@@ -111,12 +147,6 @@ main.mainloop()
 
 
 """ Main game loop """
-
-# Display welcome text
-print("Welcome to Elemental !\n")
-print("The rules are simple :\nUse all the elements to your disposition to create new ones.")
-print("For more detailed help, type \"help\".\n")
-
 leave = True
 while not leave:
 
