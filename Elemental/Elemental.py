@@ -271,7 +271,7 @@ title.grid(row=0, column=2)
 console = tk.Frame(borderwidth=3, relief="sunken", background="white")
 console.grid(row=2, column=0, columnspan=5, sticky="news")
 
-logText = ["", "", "", ""]
+logText = ["Welcome to Elemental!", "To create new elements, select one from both colums...", "And then, click the Fuse button!", ""]
 consoleText = tk.Label(master=console, text="\n".join(logText[-4:-1] + [logText[-1]]), background="white")
 consoleText.pack()
 
@@ -385,7 +385,7 @@ def fuse():
 
         # If no match were found, inform the player
         if not newElement:
-            logText.append("No new Element created ...")
+            logText.append("No new Element created...")
             consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
     
     else:
