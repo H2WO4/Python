@@ -198,6 +198,7 @@ Fish = Element("Fish", "[Bacteria + Sea]", Vitae)
 Seed = Element("Seed", "[Soil + Life]", Vitae)
 Grass = Element("Grass", "[Earth + Seed]", Vitae)
 Plant = Element("Plant", "[Seed + Life]", Vitae)
+Tree = Element("Tree", "[Plant + Life]", Vitae)
 
 
 # Galactic Series
