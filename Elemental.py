@@ -38,28 +38,6 @@ class Element:
         return self.name
 
 
-    def __contains__(self, other):
-        """ Check if a set of two Element objects is present within a third Element recipes list """
-        # Overload of the 'in' operator to perform inclusion logic check during element fusion
-        if type(other) != set:
-            return NotImplemented
-
-        # Search for the set in the elements recipes and return a boolean
-        if other in self.recipes:
-            return True
-        return False
-
-
-    def __add__(self, other):
-        """ Add two Elements object to themselves, putting them into an unordered set """
-        # Overload of the '+' operator to set up element fusion
-        if type(other) != Element:
-            return NotImplemented
-
-        # Return a set containing the two elements
-        return {self, other}
-
-
     def __lt__(self, other):
         """ Compare two Element object, using their name values """
         # Overload of the '<' operator to allow list sorting
@@ -136,82 +114,82 @@ Locus = Group("Locus")
 
 
 # Base Elements
-Fire = Element("Fire", "[]", Ignis, True)
-Air = Element("Air", "[]", Aer, True)
-Water = Element("Water", "[]", Aqua, True)
-Earth = Element("Earth", "[]", Terra, True)
-Energy = Element("Energy", "[]", Primus, True)
-Void = Element("Void", "[]", Primus, True)
+Fire = Element("Fire", "{}", Ignis, True)
+Air = Element("Air", "{}", Aer, True)
+Water = Element("Water", "{}", Aqua, True)
+Earth = Element("Earth", "{}", Terra, True)
+Energy = Element("Energy", "{}", Primus, True)
+Void = Element("Void", "{}", Primus, True)
 
 
 # 1st Level Compounds
-Plasma = Element("Plasma", "[Fire + Energy]", Ignis)
-Electricity = Element("Electricity", "[Air + Energy]", Fulgur)
-Lava = Element("Lava", "[Fire + Earth]", Ignis)
-Steam = Element("Steam", "[Air + Water]", Aer)
-Heat = Element("Heat", "[Fire + Fire]", Primus)
-Pressure = Element("Pressure", "[Earth + Energy]", Primus)
-Stone = Element("Stone", "[Earth + Earth]", Terra)
-Sea = Element("Sea", "[Water + Water]", Aqua)
-Wave = Element("Wave", "[Water + Energy]", Primus)
-Wind = Element("Wind", "[Air + Air]", Aer)
-Space = Element("Space", "[Void + Energy]", Primus)
+Plasma = Element("Plasma", "{Fire, Energy}", Ignis)
+Electricity = Element("Electricity", "{Air, Energy}", Fulgur)
+Lava = Element("Lava", "{Fire, Earth}", Ignis)
+Steam = Element("Steam", "{Air, Water}", Aer)
+Heat = Element("Heat", "{Fire, Fire}", Primus)
+Pressure = Element("Pressure", "{Earth, Energy}", Primus)
+Sea = Element("Sea", "{Water, Water}", Aqua)
+Wave = Element("Wave", "{Water, Energy}", Primus)
+Wind = Element("Wind", "{Air, Air}", Aer)
+Space = Element("Space", "{Void, Energy}", Primus)
 
 
 # 2nd and Higher Level General Compounds
-Sound = Element("Sound", "[Air + Wave]", Aer)
-Ocean = Element("Ocean", "[Sea + Sea]", Aqua)
-Salt = Element("Salt", "[Sea + Heat]", Terra)
-Tsunami = Element("Tsunami", "[Sea + Wave]", Aqua)
-Gravity = Element("Gravity", "[Pressure + Planet]", Primus)
-Time = Element("Time", "[Gravity + Space]", Primus)
+Stone = Element("Stone", "{Lava, Air}", Terra)
+Sound = Element("Sound", "{Air, Wave}", Aer)
+Ocean = Element("Ocean", "{Sea, Sea}", Aqua)
+Salt = Element("Salt", "{Sea, Heat}", Terra)
+Tsunami = Element("Tsunami", "{Sea, Wave}", Aqua)
+Gravity = Element("Gravity", "{Pressure, Planet}", Primus)
+Time = Element("Time", "{Gravity, Space}", Primus)
 
 
 # Celestial Series
-Cloud = Element("Cloud", "[Steam + Steam]", Aer)
-Sky = Element("Sky", "[Cloud + Air]", Aer)
-Tornado = Element("Tornado", "[Wind + Wind]", Aer)
-Rain = Element("Rain", "[Cloud + Water]", Aqua)
-Thunder = Element("Thunder", "[Cloud + Electricity]", Fulgur)
-Hurricane = Element("Hurricane", "[Tornado + Tornado]", Aer)
+Cloud = Element("Cloud", "{Steam, Steam}", Aer)
+Sky = Element("Sky", "{Cloud, Air}", Aer)
+Tornado = Element("Tornado", "{Wind, Wind}", Aer)
+Rain = Element("Rain", "{Cloud, Water}", Aqua)
+Thunder = Element("Thunder", "{Cloud, Electricity}", Fulgur)
+Hurricane = Element("Hurricane", "{Tornado, Tornado}", Aer)
 
 
 # Mineral Series
-Obsidian = Element("Obsidian", "[Lava + Water]", Terra)
-Iron = Element("Iron", "[Stone + Pressure]", Terra)
-Steel = Element("Steel", "[Iron + Heat]", Terra)
-Coal = Element("Coal", "[Stone + Fire]", Terra)
-Diamond = Element("Diamond", "[Coal + Pressure]", Terra)
-Rust = Element("Rust", "[Iron + Water]", Terra)
-Copper = Element("Copper", "[Iron + Stone]", Terra)
-Tin = Element("Tin", "[Iron + Fire]", Terra)
-Bronze = Element("Bronze", "[Copper + Tin]", Terra)
+Obsidian = Element("Obsidian", "{Lava, Water}", Terra)
+Iron = Element("Iron", "{Stone, Pressure}", Terra)
+Steel = Element("Steel", "{Iron, Heat}", Terra)
+Coal = Element("Coal", "{Stone, Fire}", Terra)
+Diamond = Element("Diamond", "{Coal, Pressure}", Terra)
+Rust = Element("Rust", "{Iron, Water}", Terra)
+Copper = Element("Copper", "{Iron, Stone}", Terra)
+Tin = Element("Tin", "{Iron, Fire}", Terra)
+Bronze = Element("Bronze", "{Copper, Tin}", Terra)
 
 
 # Life Series
-Cell = Element("Cell", "[Energy + Ocean]", Vitae)
-Bacteria = Element("Bacteria", "[Cell + Cell]", Vitae)
-Life = Element("Life", "[Bacteria + Energy]", Primus)
-Worm = Element("Worm", "[Bacteria + Earth]", Vitae)
-Soil = Element("Soil", "[Earth + Worm]", Terra)
-Fish = Element("Fish", "[Bacteria + Sea]", Vitae)
-Seed = Element("Seed", "[Soil + Life]", Vitae)
-Grass = Element("Grass", "[Earth + Seed]", Vitae)
-Plant = Element("Plant", "[Seed + Life]", Vitae)
-Tree = Element("Tree", "[Plant + Life]", Vitae)
+Cell = Element("Cell", "{Energy, Ocean}", Vitae)
+Bacteria = Element("Bacteria", "{Cell, Cell}", Vitae)
+Life = Element("Life", "{Bacteria, Energy}", Primus)
+Worm = Element("Worm", "{Bacteria, Earth}", Vitae)
+Soil = Element("Soil", "{Earth, Worm}", Terra)
+Fish = Element("Fish", "{Bacteria, Sea}", Vitae)
+Seed = Element("Seed", "{Soil, Life}", Vitae)
+Grass = Element("Grass", "{Earth, Seed}", Vitae)
+Plant = Element("Plant", "{Seed, Life}", Vitae)
+Tree = Element("Tree", "{Plant, Life}", Vitae)
 
 
 # Galactic Series
-Star = Element("Star", "[Plasma + Void]", Locus)
-BlackHole = Element("Black Hole", "[Void + Star]", Locus)
-Pulsar = Element("Pulsar", "[Star + Electricity]", Locus)
-Planet = Element("Planet", "[Stone + Void]", Locus)
-OceanicPlanet = Element("Oceanic Planet", "[Planet + Ocean]", Locus)
-Magma = Element("Magma", "[Planet + Lava]", Ignis)
-SolarSystem = Element("Solar System", "[Planet + Star]", Locus)
-Galaxy = Element("Galaxy", "[SolarSystem + BlackHole]", Locus)
-LocalGroup = Element("Local Group", "[Galaxy + Galaxy]", Locus)
-Universe = Element("Universe", "[LocalGroup + LocalGroup]", Locus)
+Star = Element("Star", "{Plasma, Void}", Locus)
+BlackHole = Element("Black Hole", "{Void, Star}", Locus)
+Pulsar = Element("Pulsar", "{Star, Electricity}", Locus)
+Planet = Element("Planet", "{Stone, Void}", Locus)
+OceanicPlanet = Element("Oceanic Planet", "{Planet, Ocean}", Locus)
+Magma = Element("Magma", "{Planet, Lava}", Ignis)
+SolarSystem = Element("Solar System", "{Planet, Star}", Locus)
+Galaxy = Element("Galaxy", "{SolarSystem, BlackHole}", Locus)
+LocalGroup = Element("Local Group", "{Galaxy, Galaxy}", Locus)
+Universe = Element("Universe", "{LocalGroup, LocalGroup}", Locus)
 
 
 
@@ -263,14 +241,11 @@ except ZeroDivisionError:
 # Define the main window
 main = tk.Tk()
 main.title("Elemental")
-title = tk.Label(text="Elemental")
-title.grid(row=0, column=2)
-
 
 
 # Define the console outputting text
 console = tk.Frame(borderwidth=3, relief="sunken", background="white")
-console.grid(row=2, column=0, columnspan=5, sticky="news")
+console.grid(row=1, column=0, columnspan=5, sticky="news")
 
 logText = ["Welcome to Elemental!", "To create new elements, select one from both colums...", "And then, click the Fuse button!", ""]
 consoleText = tk.Label(master=console, text="\n".join(logText[-4:-1] + [logText[-1]]), background="white")
@@ -278,15 +253,14 @@ consoleText.pack()
 
 
 
-# Define two functions to handle selecting a group
+# Define three functions to handle selecting a group
 group1 = list(Groups)[0]
 group2 = list(Groups)[0]
 def selectGroup1(selection):
-    global group1, logText, consoleText
+    global group1
     group1 = Groups[list(Groups)[selection[0]]]
     listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed]))
     listElements1["listvariable"] = listboxElements1
-
 
 def selectGroup2(selection):
     global group2
@@ -334,25 +308,24 @@ def selectElement2(selection2):
 # Define the two groups selection lists
 listboxGroups1 = tk.StringVar(value=list(Groups))
 listGroups1 = tk.Listbox(listvariable=listboxGroups1)
-listGroups1.grid(row=1, column=0, sticky="news")
+listGroups1.grid(row=0, column=0, sticky="news")
 listGroups1.bind("<Double-1>", lambda e: selectGroup1(listGroups1.curselection()))
 
 listboxGroups2 = tk.StringVar(value=list(Groups))
 listGroups2 = tk.Listbox(listvariable=listboxGroups2)
-listGroups2.grid(row=1, column=4, sticky="news")
+listGroups2.grid(row=0, column=4, sticky="news")
 listGroups2.bind("<Double-1>", lambda e: selectGroup2(listGroups2.curselection()))
 
 
 # Define the two elements selection lists
 listElements1 = tk.Listbox()
-listElements1.grid(row=1, column=1, sticky="news")
+listElements1.grid(row=0, column=1, sticky="news")
 listElements1.bind("<Double-1>", lambda e: selectElement1(listElements1.curselection()))
-selectGroup1((0, ))
 
 listElements2 = tk.Listbox()
-listElements2.grid(row=1, column=3, sticky="news")
+listElements2.grid(row=0, column=3, sticky="news")
 listElements2.bind("<Double-1>", lambda e: selectElement2(listElements2.curselection()))
-selectGroup2((0, ))
+
 
 
 
@@ -368,7 +341,7 @@ def fuse():
 
         # Test for each element
         for i in list(Elements):
-            if fusion in Elements[i]:
+            if fusion == Elements[i].recipes:
                 # If match is found and element not revealed
                 if not Elements[i].revealed:
                     # Reveal the element and inform the player
@@ -397,7 +370,7 @@ def fuse():
 
 # Define the Fuse button + fusion preview text
 fusionGroup = tk.Frame()
-fusionGroup.grid(row=1, column=2)
+fusionGroup.grid(row=0, column=2)
 
 spacesToAdd = max([len(i) for i in Elements]) + 1
 fusionPreview = tk.Label(text=" " * spacesToAdd + " + " + " " * spacesToAdd, master=fusionGroup, font="TkFixedFont")
@@ -408,9 +381,9 @@ fusionButton.pack()
 
 
 # Handle the row and column rescaling
-rowWeights = [0, 1, 2]
+rowWeights = [1, 2]
 [main.columnconfigure(i, weight=1) for i in range(5)]
-[main.rowconfigure(i, weight=rowWeights[i]) for i in range(3)]
+main.rowconfigure(0, weight=1)
 
 
 # Start the window
