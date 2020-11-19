@@ -152,6 +152,8 @@ Tornado = Element("Tornado", "{Wind, Wind}", Aer)
 Rain = Element("Rain", "{Cloud, Water}", Aqua)
 Thunder = Element("Thunder", "{Cloud, Electricity}", Fulgur)
 Hurricane = Element("Hurricane", "{Tornado, Tornado}", Aer)
+Storm = Element("Storm", "{Thunder, Rain}", Fulgur)
+LightningRod = Element("Lightning Rod", "{Thunder, Copper}", Fulgur)
 
 
 # Mineral Series

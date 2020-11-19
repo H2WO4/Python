@@ -214,7 +214,7 @@ class SquareMatrix(Matrix):
             cofactor = []
             for i in range(3):
                 cofactor.append([])
-                for j in range(3):
+                for _ in range(3):
                     cofactor[i].append(0)
             cofactor[0][0] = self.value[1][1] * self.value[2][2] - self.value[1][2] * self.value[2][1]
             cofactor[0][1] = -(self.value[0][1] * self.value[2][2] - self.value[0][2] * self.value[2][1])

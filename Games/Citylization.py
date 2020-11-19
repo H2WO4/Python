@@ -67,7 +67,7 @@ class City:
         self.grid = []
         for i in range(self.size):
             self.grid.append([])
-            for j in range(self.size):
+            for _ in range(self.size):
                 self.grid[i].append(Empty)
         self.build(size, size, Center)
         if terrain and size > 1:
