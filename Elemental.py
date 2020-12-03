@@ -89,6 +89,12 @@ class Group:
         """ Return the name value of the object """
         # Overload the 'str()' operator to return the group's name
         return self.name
+    
+    def isOnlyNonReveal(self):
+        for i in self.elements:
+            if i.revealed:
+                return True
+        return False
 
 
 
@@ -114,10 +120,10 @@ Locus = Group("Locus")
 
 
 # Base Elements
-Fire = Element("Fire", "{}", Ignis, True)
-Air = Element("Air", "{}", Aer, True)
-Water = Element("Water", "{}", Aqua, True)
-Earth = Element("Earth", "{}", Terra, True)
+Fire = Element("Fire", "{}", Primus, True)
+Air = Element("Air", "{}", Primus, True)
+Water = Element("Water", "{}", Primus, True)
+Earth = Element("Earth", "{}", Primus, True)
 Energy = Element("Energy", "{}", Primus, True)
 Void = Element("Void", "{}", Primus, True)
 
@@ -179,6 +185,7 @@ Seed = Element("Seed", "{Soil, Life}", Vitae)
 Grass = Element("Grass", "{Earth, Seed}", Vitae)
 Plant = Element("Plant", "{Seed, Life}", Vitae)
 Tree = Element("Tree", "{Plant, Life}", Vitae)
+Forest = Element("Forest", "{Tree, Tree}", Vitae)
 
 
 # Galactic Series
@@ -273,6 +280,8 @@ def selectGroup2(selection):
 
 def actualizeGroups():
     global group1, group2
+    listGroups1["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
+    listGroups2["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
     listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed]))
     listElements1["listvariable"] = listboxElements1
     listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed]))
@@ -308,12 +317,12 @@ def selectElement2(selection2):
 
 
 # Define the two groups selection lists
-listboxGroups1 = tk.StringVar(value=list(Groups))
+listboxGroups1 = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
 listGroups1 = tk.Listbox(listvariable=listboxGroups1)
 listGroups1.grid(row=0, column=0, sticky="news")
 listGroups1.bind("<Double-1>", lambda e: selectGroup1(listGroups1.curselection()))
 
-listboxGroups2 = tk.StringVar(value=list(Groups))
+listboxGroups2 = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
 listGroups2 = tk.Listbox(listvariable=listboxGroups2)
 listGroups2.grid(row=0, column=4, sticky="news")
 listGroups2.bind("<Double-1>", lambda e: selectGroup2(listGroups2.curselection()))

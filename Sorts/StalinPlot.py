@@ -24,7 +24,7 @@ for j in LengthListStalin:
         shuffle(liste)
         LengthStalin += len(StalinSort(liste))
 
-    ListLengthStalin.append(LengthStalin / 1000)
+    ListLengthStalin.append(LengthStalin / 10000)
 
 plot(LengthListStalin, ListLengthStalin)
 show()
