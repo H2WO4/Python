@@ -1,0 +1,13 @@
+{
+    "name" : "Empty Space",
+    "id" : "empty",
+    "type" : "system",
+    "symbol" : "-",
+    "yields" : [],
+    "tags" :
+    [
+        {
+            "name" : "empty"
+        }
+    ]
+}

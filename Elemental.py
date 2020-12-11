@@ -142,13 +142,13 @@ Space = Element("Space", "{Void, Energy}", Primus)
 
 
 # 2nd and Higher Level General Compounds
-Stone = Element("Stone", "{Lava, Air}", Terra)
 Sound = Element("Sound", "{Air, Wave}", Aer)
 Ocean = Element("Ocean", "{Sea, Sea}", Aqua)
 Salt = Element("Salt", "{Sea, Heat}", Terra)
 Tsunami = Element("Tsunami", "{Sea, Wave}", Aqua)
 Gravity = Element("Gravity", "{Pressure, Planet}", Primus)
 Time = Element("Time", "{Gravity, Space}", Primus)
+Explosion = Element("Explosion", "{Steam, Fire}", Ignis)
 
 
 # Celestial Series
@@ -163,6 +163,7 @@ LightningRod = Element("Lightning Rod", "{Thunder, Copper}", Fulgur)
 
 
 # Mineral Series
+Stone = Element("Stone", "{Lava, Air}", Terra)
 Obsidian = Element("Obsidian", "{Lava, Water}", Terra)
 Iron = Element("Iron", "{Stone, Pressure}", Terra)
 Steel = Element("Steel", "{Iron, Heat}", Terra)

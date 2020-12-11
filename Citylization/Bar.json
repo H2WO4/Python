@@ -1,0 +1,35 @@
+{
+    "name" : "Bar",
+    "id" : "bar",
+    "type" : "building",
+    "symbol" : "B",
+    "yields" :
+    [
+        {
+            "type" : "turn",
+            "gains" :
+            [
+                {
+                    "ressource" : "gold",
+                    "amount" : 2,
+                    "modifiers" :
+                    [
+                        {
+                            "scope" : "direct_neighbors_2",
+                            "targets" :
+                            [
+                                {
+                                    "type" : "tag",
+                                    "target" : "housing"
+                                }
+                            ],
+                            "type" : "additive",
+                            "amount" : 1
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tags" : []
+}

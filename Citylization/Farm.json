@@ -1,0 +1,47 @@
+{
+    "name" : "Farm",
+    "id" : "farm",
+    "type" : "building",
+    "symbol" : "F",
+    "yields" :
+    [
+        {
+            "type" : "turn",
+            "gains" :
+            [
+                {
+                    "ressource" : "wheat",
+                    "amount" : 1,
+                    "modifiers" :
+                    [
+                        {
+                            "scope" : "neighbors",
+                            "targets" :
+                            [
+                                {
+                                    "type" : "building",
+                                    "target" : "farm"
+                                }
+                            ],
+                            "type" : "additive",
+                            "amount" : 1
+                        },
+                        {
+                            "scope" : "direct_neighbors",
+                            "targets" :
+                            [
+                                {
+                                    "type" : "building",
+                                    "target" : "river"
+                                }
+                            ],
+                            "type" : "boolean_multiplicative",
+                            "amount" : 2
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tags" : []
+}

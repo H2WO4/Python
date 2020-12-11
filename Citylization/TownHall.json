@@ -1,0 +1,35 @@
+{
+    "name" : "Town Hall",
+    "id" : "town_hall",
+    "type" : "building",
+    "symbol" : "*",
+    "yields" :
+    [
+        {
+            "type" : "turn",
+            "gains" :
+            [
+                {
+                    "ressource" : "gold",
+                    "amount" : 5,
+                    "modifiers" :
+                    [
+                        { 
+                            "scope" : "global",
+                            "targets" :
+                            [
+                                {
+                                    "type" : "tag",
+                                    "target" : "housing"
+                                }
+                            ],
+                            "type" : "additive",
+                            "amount" : 1
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tags" : []
+}

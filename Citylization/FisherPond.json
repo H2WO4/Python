@@ -1,0 +1,35 @@
+{
+    "name" : "Fisher's Pond",
+    "id" : "fisher",
+    "type" : "building",
+    "symbol" : "P",
+    "yields" :
+    [
+        {
+            "type" : "turn",
+            "gains" :
+            [
+                {
+                    "ressource" : "fish",
+                    "amount" : 2,
+                    "modifiers" :
+                    [
+                        {
+                            "scope" : "direct_neighbors",
+                            "targets" :
+                            [
+                                {
+                                    "type" : "building",
+                                    "target" : "river"
+                                }
+                            ],
+                            "type" : "additive",
+                            "amount" : 3
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tags" : []
+}

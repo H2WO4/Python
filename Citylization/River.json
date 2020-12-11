@@ -1,0 +1,8 @@
+{
+    "name" : "River",
+    "id" : "river",
+    "type" : "nature",
+    "symbol" : "≈",
+    "yields" : [],
+    "tags" : []
+}

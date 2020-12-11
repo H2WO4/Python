@@ -1,0 +1,13 @@
+{
+    "name" : "Small House",
+    "id" : "small_house",
+    "type" : "building",
+    "symbol" : "h",
+    "yields" : [],
+    "tags" :
+    [
+        {
+            "name" : "housing"
+        }
+    ]
+}
