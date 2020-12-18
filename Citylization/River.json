@@ -2,7 +2,7 @@
     "name" : "River",
     "id" : "river",
     "type" : "nature",
-    "symbol" : "≈",
+    "symbol" : "=",
     "yields" : [],
     "tags" : []
 }

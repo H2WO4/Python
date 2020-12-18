@@ -1,3 +1,4 @@
+import tkinter as tk
 import os, json, glob
 
 
@@ -6,11 +7,6 @@ class City:
         self.name = name
         self.grid = [[getBuildingById("empty") for j in range(size * 2 + 1)] for i in range(size * 2 + 1)]
         self.grid[size][size] = getBuildingById("town_hall")
-        self.grid[1][1] = getBuildingById("farm")
-        self.grid[2][1] = getBuildingById("farm")
-        self.grid[1][2] = getBuildingById("small_house")
-        self.grid[3][2] = getBuildingById("small_house")
-        self.grid[1][3] = getBuildingById("small_house")
     
     def endTurn(self):
         for i in self.grid:
@@ -115,6 +111,8 @@ class Modifier:
             match = []
             [[match.append(1) for j in i if j in target] for i in City.grid]
             bonus += len(match)
+        if self.scope == "":
+            pass
         return bonus
 
 
@@ -137,6 +135,19 @@ class Tag:
     def __init__(self, rawData, origin):
         self.name = rawData["name"]
         self.origin = origin
+
+
+
+class NewLabel(tk.Label):
+
+    def __init__(self, x, y, *args, **kwargs):
+        tk.Label.__init__(self, *args, **kwargs)
+        self.x = x
+        self.y = y
+        self.bind("<Enter>", self.displayDescription)
+
+    def displayDescription(self, _):
+        descriptionText["text"] = City.grid[self.x][self.y].name + "\n" + " " * 40
 
 
 
@@ -177,21 +188,114 @@ for filename in glob.glob(os.path.join(os.getcwd() + path, "*.json")):
 for data in BuildingListRaw:
     BuildingList.append(Building(data))
 
+citySize = 7
 
-
-City = City("A", 2)
+City = City("A", citySize//2)
 
 Gold = Ressource("Gold", "gold")
 Wheat = Ressource("Wheat", "wheat")
 Fish = Ressource("Fish", "fish")
 Wood = Ressource("Wood", "wood")
 
-for i in City.grid:
-    print(" ".join([str(j) for j in i]))
 
-for i in City.grid:
-    for j in i:
-        j.activate()
+""" Graphical Interface """
 
-for i in RessourceList:
-    print(i)
+
+def update():
+    for i in range(citySize):
+        for j in range(citySize):
+            gridText[i][j]["text"] = City.grid[i][j].symbol
+    
+    ressourceText["text"] = "\n".join(["{}: {}".format(i.name, i.amount) for i in RessourceList]) + ("\n" + " " * 40)
+
+
+def endTurn():
+    for i in City.grid:
+        for j in i:
+            j.activate()
+    
+    update()
+
+
+# Define the main window
+main = tk.Tk()
+main.title("Citylization")
+
+
+# Define the console outputting text
+console = tk.Frame(borderwidth=3, relief="sunken", background="white")
+console.grid(row=citySize+1, column=0, columnspan=citySize, sticky="news")
+
+logText = ["Welcome to Citylization!", " " * 80, "", ""]
+consoleText = tk.Label(master=console, text="\n".join(logText[-4:-1] + [logText[-1]]), background="white")
+consoleText.pack()
+
+
+# Define the main grid
+grid = []
+gridText = []
+for i in range(citySize):
+    grid.append([])
+    gridText.append([])
+    for j in range(citySize):
+        grid[i].append(tk.Frame(borderwidth=3, relief="sunken", background="white"))
+        grid[i][j].grid(row=i, column=j, sticky="news")
+        gridText[i].append(NewLabel(i, j, master=grid[i][j], text="", background="white"))
+        gridText[i][j].pack()
+
+
+# Define the ressource list
+ressourcesPanel = tk.Frame(borderwidth=3, relief="sunken", background="white")
+ressourcesPanel.grid(row=0, column=citySize+1, rowspan=citySize, sticky="news")
+
+ressourceText = tk.Label(master=ressourcesPanel, text="", background="white")
+ressourceText.pack()
+
+
+# Define the description panel
+descriptionPanel = tk.Frame(borderwidth=3, relief="sunken", background="white")
+descriptionPanel.grid(row=0, column=citySize+2, rowspan=citySize, sticky="news")
+
+descriptionText = tk.Label(master=descriptionPanel, text=" " * 40, background="white")
+descriptionText.pack()
+
+
+# Define the end turn button
+endTurnGroup = tk.Frame()
+endTurnGroup.grid(row=citySize+1, column=citySize+1)
+
+endTurnButton = tk.Button(text="End Turn", master=endTurnGroup, command=endTurn)
+endTurnButton.pack()
+
+
+# Setup windows resizing
+[main.columnconfigure(i, weight=1) for i in range(citySize)]
+main.columnconfigure(citySize+1, weight=4)
+[main.rowconfigure(i, weight=1) for i in range(citySize)]
+main.rowconfigure(citySize+1, weight=4)
+
+
+# Tests
+City.grid[2][2] = getBuildingById("farm")
+City.grid[3][2] = getBuildingById("farm")
+
+City.grid[2][5] = getBuildingById("small_house")
+City.grid[3][5] = getBuildingById("small_house")
+City.grid[2][6] = getBuildingById("small_house")
+
+City.grid[3][6] = getBuildingById("bar")
+
+City.grid[0][0] = getBuildingById("woods")
+City.grid[0][1] = getBuildingById("woods")
+City.grid[1][0] = getBuildingById("woods")
+
+City.grid[1][1] = getBuildingById("woodcutter")
+
+City.grid[5][4] = getBuildingById("fisher")
+
+for i in range(citySize):
+    City.grid[4][i] = getBuildingById("river")
+
+# Start the window
+update()
+main.mainloop()

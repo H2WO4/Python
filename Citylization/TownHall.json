@@ -11,7 +11,7 @@
             [
                 {
                     "ressource" : "gold",
-                    "amount" : 5,
+                    "amount" : 3,
                     "modifiers" :
                     [
                         { 
