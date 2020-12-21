@@ -3,6 +3,7 @@
     "id" : "farm",
     "type" : "building",
     "symbol" : "F",
+    "description" : "Produces 1 Weath every turn.\nProduces +1 Weath per adjacent Farm.\nTotal yields multiplied by 2 if irrigated.",
     "yields" :
     [
         {
@@ -31,8 +32,8 @@
                             "targets" :
                             [
                                 {
-                                    "type" : "building",
-                                    "target" : "river"
+                                    "type" : "tag",
+                                    "target" : "irrigation"
                                 }
                             ],
                             "type" : "boolean_multiplicative",

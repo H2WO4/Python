@@ -3,6 +3,7 @@
     "id" : "bar",
     "type" : "building",
     "symbol" : "B",
+    "description" : "Produces 2 Gold every turn.\nProduces +1 Gold per housing in a 2-tile range.",
     "yields" :
     [
         {

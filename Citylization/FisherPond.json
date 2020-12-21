@@ -3,6 +3,7 @@
     "id" : "fisher",
     "type" : "building",
     "symbol" : "P",
+    "description" : "Produces 2 Fish every turn.\nProduces +3 Fish per adjacent water source.",
     "yields" :
     [
         {
@@ -19,8 +20,8 @@
                             "targets" :
                             [
                                 {
-                                    "type" : "building",
-                                    "target" : "river"
+                                    "type" : "tag",
+                                    "target" : "water"
                                 }
                             ],
                             "type" : "additive",

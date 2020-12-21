@@ -2,11 +2,13 @@ import tkinter as tk
 import os, json, glob
 
 
+
 class City:
     def __init__(self, name, size):
         self.name = name
-        self.grid = [[getBuildingById("empty") for j in range(size * 2 + 1)] for i in range(size * 2 + 1)]
-        self.grid[size][size] = getBuildingById("town_hall")
+        self.size = size * 2 + 1
+        self.grid = [[BuildingList["empty"] for j in range(size * 2 + 1)] for i in range(size * 2 + 1)]
+        self.grid[size][size] = BuildingList["town_hall"]
     
     def endTurn(self):
         for i in self.grid:
@@ -20,7 +22,7 @@ class Ressource:
         self.name = name
         self.id = Id
         self.amount = 0
-        RessourceList.append(self)
+        RessourceList[self.id] = self
 
     def __str__(self):
         return "{}: {}".format(self.name, self.amount)
@@ -34,10 +36,8 @@ class Building:
     def __init__(self, rawData):
         self.name = rawData["name"]
         self.id = rawData["id"]
-        if len(rawData["symbol"]) > 3:
-            self.symbol = chr(int(rawData["symbol"]))
-        else:
-            self.symbol = rawData["symbol"]
+        self.symbol = rawData["symbol"]
+        self.description = rawData["description"]
         self.type = rawData["type"]
         self.yields = []
         for i in rawData["yields"]:
@@ -45,6 +45,8 @@ class Building:
         self.tags = []
         for i in rawData["tags"]:
             self.tags.append(Tag(i, self))
+        
+        BuildingList[self.id] = self
     
     def __str__(self):
         return self.symbol
@@ -55,9 +57,45 @@ class Building:
                 return True
         return False
     
-    def activate(self):
+    def activate(self, x, y):
         for i in self.yields:
-            i.produce()
+            i.produce(x, y)
+    
+    def neighbors(_, x, y):
+        output = []
+        for a, b in [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if (abs(a) + abs(b) > 0)]:
+            try:
+                output.append(City.grid[x+a][y+b])
+            except:
+                pass
+        return output
+    
+    def neighbors_2(_, x, y):
+        output = []
+        for a, b in [(a, b) for a in [-2, -1, 0, 1, 2] for b in [-2, -1, 0, 1, 2] if (abs(a) + abs(b) > 0)]:
+            try:
+                output.append(City.grid[x+a][y+b])
+            except:
+                pass
+        return output
+    
+    def direct_neighbors(_, x, y):
+        output = []
+        for a, b in [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if (abs(a) + abs(b) == 1)]:
+            try:
+                output.append(City.grid[x+a][y+b])
+            except:
+                pass
+        return output
+    
+    def direct_neighbors_2(_, x, y):
+        output = []
+        for a, b in [(a, b) for a in [-2, -1, 0, 1, 2] for b in [-2, -1, 0, 1, 2] if (abs(a) + abs(b) in [1, 2])]:
+            try:
+                output.append(City.grid[x+a][y+b])
+            except:
+                pass
+        return output
 
 
 
@@ -69,9 +107,9 @@ class Yield:
             self.gains.append(Gain(i, self))
         self.origin = origin
     
-    def produce(self):
+    def produce(self, x, y):
         for i in self.gains:
-            i.calculate()
+            i.calculate(x, y)
 
 
 
@@ -84,11 +122,11 @@ class Gain:
             self.modifiers.append(Modifier(i, self))
         self.origin = origin
         
-    def calculate(self):
+    def calculate(self, x, y):
         bonus = 0
         for i in self.modifiers:
-            bonus += i.calculate()
-        getRessourceById(self.ressource).gain(self.amount + bonus)
+            bonus += i.calculate(self.amount + bonus, x, y)
+        RessourceList[self.ressource].gain(self.amount + bonus)
 
 
 
@@ -102,17 +140,72 @@ class Modifier:
             self.targets.append(Target(i, self))
         self.origin = origin
         
-    def calculate(self):
+    def calculate(self, amount, x, y):
         target = set({})
         bonus = 0
         for i in self.targets:
-            target = target | i.evaluate()
+            target |= i.evaluate()
+
         if self.scope == "global":
             match = []
-            [[match.append(1) for j in i if j in target] for i in City.grid]
-            bonus += len(match)
-        if self.scope == "":
-            pass
+            [[match.append(j) for j in i if j in target] for i in City.grid]
+            if self.type == "additive":
+                bonus += len(match) * self.amount
+            if self.type == "multiplicative":
+                bonus += amount * ((len(match) - 1) * self.amount)
+            if self.type == "boolean_additive" and len(match) >= 1:
+                bonus += self.amount
+            if self.type == "boolean_multiplicative" and len(match) >= 1:
+                bonus += amount * (self.amount - 1)
+        
+        elif self.scope == "neighbors":
+            match = []
+            [match.append(i) for i in self.origin.origin.origin.neighbors(x, y) if i in target]
+            if self.type == "additive":
+                bonus += len(match) * self.amount
+            if self.type == "multiplicative":
+                bonus += amount * ((len(match) - 1) * self.amount)
+            if self.type == "boolean_additive" and len(match) >= 1:
+                bonus += self.amount
+            if self.type == "boolean_multiplicative" and len(match) >= 1:
+                bonus += amount * (self.amount - 1)
+        
+        elif self.scope == "direct_neighbors":
+            match = []
+            [match.append(i) for i in self.origin.origin.origin.direct_neighbors(x, y) if i in target]
+            if self.type == "additive":
+                bonus += len(match) * self.amount
+            if self.type == "multiplicative":
+                bonus += amount * ((len(match) - 1) * self.amount)
+            if self.type == "boolean_additive" and len(match) >= 1:
+                bonus += self.amount
+            if self.type == "boolean_multiplicative" and len(match) >= 1:
+                bonus += amount * (self.amount - 1)
+        
+        elif self.scope == "neighbors_2":
+            match = []
+            [match.append(i) for i in self.origin.origin.origin.neighbors_2(x, y) if i in target]
+            if self.type == "additive":
+                bonus += len(match) * self.amount
+            if self.type == "multiplicative":
+                bonus += amount * ((len(match) - 1) * self.amount)
+            if self.type == "boolean_additive" and len(match) >= 1:
+                bonus += self.amount
+            if self.type == "boolean_multiplicative" and len(match) >= 1:
+                bonus += amount * (self.amount - 1)
+        
+        elif self.scope == "direct_neighbors_2":
+            match = []
+            [match.append(i) for i in self.origin.origin.origin.direct_neighbors_2(x, y) if i in target]
+            if self.type == "additive":
+                bonus += len(match) * self.amount
+            if self.type == "multiplicative":
+                bonus += amount * ((len(match) - 1) * self.amount)
+            if self.type == "boolean_additive" and len(match) >= 1:
+                bonus += self.amount
+            if self.type == "boolean_multiplicative" and len(match) >= 1:
+                bonus += amount * (self.amount - 1)
+        
         return bonus
 
 
@@ -125,9 +218,9 @@ class Target:
     
     def evaluate(self):
         if self.type == "tag":
-            return {i for i in BuildingList if i.hasTag(self.target)}
+            return {BuildingList[i] for i in BuildingList if BuildingList[i].hasTag(self.target)}
         elif self.type == "building":
-            return {getBuildingById(self.target)}
+            return {BuildingList[self.target]}
 
 
 
@@ -141,42 +234,21 @@ class Tag:
 class NewLabel(tk.Label):
 
     def __init__(self, x, y, *args, **kwargs):
-        tk.Label.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.x = x
         self.y = y
         self.bind("<Enter>", self.displayDescription)
 
     def displayDescription(self, _):
-        descriptionText["text"] = City.grid[self.x][self.y].name + "\n" + " " * 40
+        descriptionText["text"] = City.grid[self.x][self.y].name + "\n" * 2 + City.grid[self.x][self.y].description + "\n" + " " * 100
 
 
 
 BuildingListRaw = []
-BuildingList = []
+BuildingList = {}
+BuildingImages = {}
 
-RessourceList = []
-
-
-
-def getBuildingByName(name):
-    for i in BuildingList:
-        if i.name == name:
-            return i
-
-def getBuildingById(Id):
-    for i in BuildingList:
-        if i.id == Id:
-            return i
-
-def getRessourceByName(name):
-    for i in RessourceList:
-        if i.name == name:
-            return i
-
-def getRessourceById(Id):
-    for i in RessourceList:
-        if i.id == Id:
-            return i
+RessourceList = {}
 
 
 
@@ -186,9 +258,9 @@ for filename in glob.glob(os.path.join(os.getcwd() + path, "*.json")):
         BuildingListRaw.append(json.load(f))
 
 for data in BuildingListRaw:
-    BuildingList.append(Building(data))
+    Building(data)
 
-citySize = 7
+citySize = 9
 
 City = City("A", citySize//2)
 
@@ -204,22 +276,37 @@ Wood = Ressource("Wood", "wood")
 def update():
     for i in range(citySize):
         for j in range(citySize):
-            gridText[i][j]["text"] = City.grid[i][j].symbol
+            try:
+                gridText[i][j]["image"] = BuildingImages[City.grid[i][j].id]
+            except:
+                gridText[i][j]["text"] = City.grid[i][j].symbol
     
-    ressourceText["text"] = "\n".join(["{}: {}".format(i.name, i.amount) for i in RessourceList]) + ("\n" + " " * 40)
+    ressourceText["text"] = "\n".join(["{}: {}".format(RessourceList[i].name, RessourceList[i].amount) for i in RessourceList]) + ("\n" + " " * 40)
 
 
 def endTurn():
-    for i in City.grid:
-        for j in i:
-            j.activate()
+    for i in range(City.size):
+        for j in range(City.size):
+            City.grid[i][j].activate(i, j)
     
     update()
+
+
+def build(building, x, y):
+    if City.grid[x][y].hasTag("empty"):
+        City.grid[x][y] = building
 
 
 # Define the main window
 main = tk.Tk()
 main.title("Citylization")
+
+
+# Load images
+path = "/CitylizationImages"
+for filename in glob.glob(os.path.join(os.getcwd() + path, "*.png")):
+    BuildingImages[filename.removeprefix(os.getcwd() + path + "\\").removesuffix(".png")] = tk.PhotoImage(file=filename)
+
 
 
 # Define the console outputting text
@@ -238,7 +325,7 @@ for i in range(citySize):
     grid.append([])
     gridText.append([])
     for j in range(citySize):
-        grid[i].append(tk.Frame(borderwidth=3, relief="sunken", background="white"))
+        grid[i].append(tk.Frame(borderwidth=3, relief="groove", background="white"))
         grid[i][j].grid(row=i, column=j, sticky="news")
         gridText[i].append(NewLabel(i, j, master=grid[i][j], text="", background="white"))
         gridText[i][j].pack()
@@ -256,7 +343,7 @@ ressourceText.pack()
 descriptionPanel = tk.Frame(borderwidth=3, relief="sunken", background="white")
 descriptionPanel.grid(row=0, column=citySize+2, rowspan=citySize, sticky="news")
 
-descriptionText = tk.Label(master=descriptionPanel, text=" " * 40, background="white")
+descriptionText = tk.Label(master=descriptionPanel, text=" " * 100, background="white")
 descriptionText.pack()
 
 
@@ -276,25 +363,25 @@ main.rowconfigure(citySize+1, weight=4)
 
 
 # Tests
-City.grid[2][2] = getBuildingById("farm")
-City.grid[3][2] = getBuildingById("farm")
+build(BuildingList["farm"], 3, 2)
+build(BuildingList["farm"], 4, 2)
 
-City.grid[2][5] = getBuildingById("small_house")
-City.grid[3][5] = getBuildingById("small_house")
-City.grid[2][6] = getBuildingById("small_house")
+build(BuildingList["small_house"], 2, 6)
+build(BuildingList["small_house"], 2, 5)
+build(BuildingList["small_house"], 1, 6)
 
-City.grid[3][6] = getBuildingById("bar")
+build(BuildingList["bar"], 3, 6)
 
-City.grid[0][0] = getBuildingById("woods")
-City.grid[0][1] = getBuildingById("woods")
-City.grid[1][0] = getBuildingById("woods")
+build(BuildingList["woods"], 0, 0)
+build(BuildingList["woods"], 0, 1)
+build(BuildingList["woods"], 1, 0)
 
-City.grid[1][1] = getBuildingById("woodcutter")
+build(BuildingList["woodcutter"], 1, 1)
 
-City.grid[5][4] = getBuildingById("fisher")
+build(BuildingList["fisher"], 6, 6)
 
 for i in range(citySize):
-    City.grid[4][i] = getBuildingById("river")
+    build(BuildingList["river"], 5, i)
 
 # Start the window
 update()

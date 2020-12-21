@@ -3,6 +3,7 @@
     "id" : "town_hall",
     "type" : "building",
     "symbol" : "*",
+    "description" : "Produces 3 Gold every turn.\nProduces +1 Gold per housing.",
     "yields" :
     [
         {

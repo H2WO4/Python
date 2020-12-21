@@ -3,6 +3,7 @@
     "id" : "woodcutter",
     "type" : "building",
     "symbol" : "C",
+    "description" : "Produces 1 Wood every turn.\nProduces +2 Wood per adjacent Woods.",
     "yields" :
     [
         {

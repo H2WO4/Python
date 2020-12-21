@@ -1,8 +1,9 @@
 {
-    "name" : "Empty Space",
+    "name" : "Empty",
     "id" : "empty",
     "type" : "system",
-    "symbol" : "-",
+    "symbol" : "",
+    "description" : "",
     "yields" : [],
     "tags" :
     [
