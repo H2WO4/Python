@@ -273,6 +273,7 @@ Wood = Ressource("Wood", "wood")
 """ Graphical Interface """
 
 
+# Define the update function
 def update():
     for i in range(citySize):
         for j in range(citySize):
@@ -284,6 +285,7 @@ def update():
     ressourceText["text"] = "\n".join(["{}: {}".format(RessourceList[i].name, RessourceList[i].amount) for i in RessourceList]) + ("\n" + " " * 40)
 
 
+# Define the end turn command
 def endTurn():
     for i in range(City.size):
         for j in range(City.size):
@@ -292,6 +294,7 @@ def endTurn():
     update()
 
 
+# Define the build command
 def build(building, x, y):
     if City.grid[x][y].hasTag("empty"):
         City.grid[x][y] = building
@@ -355,6 +358,14 @@ endTurnButton = tk.Button(text="End Turn", master=endTurnGroup, command=endTurn)
 endTurnButton.pack()
 
 
+# Define the menu buttons
+menuGroup = tk.Frame()
+menuGroup.grid(row=citySize+1, column=citySize+2)
+
+buildButton = tk.Button(text="Build", master=menuGroup, command=endTurn)
+buildButton.pack()
+
+
 # Setup windows resizing
 [main.columnconfigure(i, weight=1) for i in range(citySize)]
 main.columnconfigure(citySize+1, weight=4)
@@ -363,26 +374,28 @@ main.rowconfigure(citySize+1, weight=4)
 
 
 # Tests
-build(BuildingList["farm"], 3, 2)
-build(BuildingList["farm"], 4, 2)
+def test():
+    build(BuildingList["farm"], 3, 2)
+    build(BuildingList["farm"], 4, 2)
 
-build(BuildingList["small_house"], 2, 6)
-build(BuildingList["small_house"], 2, 5)
-build(BuildingList["small_house"], 1, 6)
+    build(BuildingList["small_house"], 2, 6)
+    build(BuildingList["small_house"], 2, 5)
+    build(BuildingList["small_house"], 1, 6)
 
-build(BuildingList["bar"], 3, 6)
+    build(BuildingList["bar"], 3, 6)
 
-build(BuildingList["woods"], 0, 0)
-build(BuildingList["woods"], 0, 1)
-build(BuildingList["woods"], 1, 0)
+    build(BuildingList["woods"], 0, 0)
+    build(BuildingList["woods"], 0, 1)
+    build(BuildingList["woods"], 1, 0)
 
-build(BuildingList["woodcutter"], 1, 1)
+    build(BuildingList["woodcutter"], 1, 1)
 
-build(BuildingList["fisher"], 6, 6)
+    build(BuildingList["fisher"], 6, 6)
 
-for i in range(citySize):
-    build(BuildingList["river"], 5, i)
+    for i in range(citySize):
+        build(BuildingList["river"], 5, i)
 
 # Start the window
 update()
+test()
 main.mainloop()
