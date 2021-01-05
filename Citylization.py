@@ -298,6 +298,7 @@ def endTurn():
 def build(building, x, y):
     if City.grid[x][y].hasTag("empty"):
         City.grid[x][y] = building
+        update()
 
 
 # Define the main window
