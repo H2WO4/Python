@@ -114,8 +114,8 @@ Aqua = Group("Aqua")
 Terra = Group("Terra")
 Aer = Group("Aer")
 Fulgur = Group("Fulgur")
-Vitae = Group("Vitae")
 Primus = Group("Primus")
+Vitae = Group("Vitae")
 Locus = Group("Locus")
 
 
@@ -268,13 +268,13 @@ group1 = list(Groups)[0]
 group2 = list(Groups)[0]
 def selectGroup1(selection):
     global group1
-    group1 = Groups[list(Groups)[selection[0]]]
+    group1 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
     listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed]))
     listElements1["listvariable"] = listboxElements1
 
 def selectGroup2(selection):
     global group2
-    group2 = Groups[list(Groups)[selection[0]]]
+    group2 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
     listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed]))
     listElements2["listvariable"] = listboxElements2
 
