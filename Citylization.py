@@ -395,6 +395,8 @@ def test():
 
     for i in range(citySize):
         build(BuildingList["river"], 5, i)
+    
+    update()
 
 # Start the window
 update()
