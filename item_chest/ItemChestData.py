@@ -1,6 +1,21 @@
+from typing import List
+
+
 # Object Definition
+class Stat:
+    def __init__(self, name: str, type: str, modifier: float, special: bool = False):
+        self.name = name
+        self.type = type
+        self.modifier = modifier
+
+        if not special:
+            stats.append(self)
+    
+    def __str__(self):
+        return self.name
+
 class Type:
-    def __init__(self, name, stat, statModifier, gender):
+    def __init__(self, name: str, stat: Stat, statModifier: float, gender: int):
         self.name = name
         self.stat = stat
         self.statModifier = statModifier
@@ -12,7 +27,7 @@ class Type:
         return self.name
 
 class Material:
-    def __init__(self, name, stat, quality, statModifier, feminine, plural = 0):
+    def __init__(self, name: str, stat: Stat, quality: int, statModifier: float, feminine: int, plural: int = 0):
         self.name = name
         self.stat = stat
         self.quality = quality
@@ -26,7 +41,7 @@ class Material:
         return self.name
 
 class Attribute:
-    def __init__(self, name, stat, qualityModifier, statModifier, feminine, plural = 0):
+    def __init__(self, name: str, stat: Stat, qualityModifier: int, statModifier: float, feminine: int, plural: int = 0):
         self.name = name
         self.stat = stat
         self.qualityModifier = qualityModifier
@@ -40,7 +55,7 @@ class Attribute:
         return self.name
 
 class Quality:
-    def __init__(self, name, multiplier, totalStats):
+    def __init__(self, name: str, multiplier: float, totalStats: int):
         self.name = name
         self.multiplier = multiplier
         self.totalStats = totalStats
@@ -48,24 +63,12 @@ class Quality:
     def __str__(self):
         return self.name
 
-class Stat:
-    def __init__(self, name, type, modifier, special = False):
-        self.name = name
-        self.type = type
-        self.modifier = modifier
-
-        if not special:
-            stats.append(self)
-    
-    def __str__(self):
-        return self.name
 
 
-
-stats = []
-materials = []
-types = []
-attributes = []
+stats: List[Stat] = []
+materials: List[Material] = []
+types: List[Type] = []
+attributes: List[Attribute] = []
 
 
 Attaque = Stat("Attaque", "Dual", 1)
@@ -322,7 +325,7 @@ médecin = Attribute("du médecin", Vitalité, 0, 1.5, 0)
 Eros = Attribute("d'Eros", Charme, 0, 3, 0)
 Émont = Attribute("d'Émont", PacteDiable, 0, 1, 0)
 Io = Attribute("d'Io", AptTemporelle, 3, 1, 0)
-Iego = Attribute("d'Iego", Dinousaures, 2, 1, 0)
+Yego = Attribute("d'Yego", Dinousaures, 2, 1, 0)
 D4C = Attribute("d'Iforci", AptDimensionelle, 3, 1, 0)
 
 
@@ -333,6 +336,7 @@ Cassé = Quality("Cassé", -5, 0)
 Mauvais = Quality("Mauvaise Qualité", -1, 1)
 Poussiéreux = Quality("Poussiéreux", -2, 0)
 Banal = Quality("Banal", 0, 0)
+Basique = Quality("Basique", 0, 0)
 Commun = Quality("Commun", 1, 0)
 Curieux = Quality("Curieux", 0.5, 1)
 PeuCommun = Quality("Peu Commun", 2, 0)
@@ -357,7 +361,7 @@ Omniscient = Quality("Omniscient", 10, 12)
 qualities = [[Maudit],
             [Merdique, Cassé],
             [Mauvais, Poussiéreux],
-            [Banal],
+            [Banal, Basique],
             [Commun, Curieux],
             [PeuCommun, Étrange],
             [Rare, Antique],

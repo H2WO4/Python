@@ -1,5 +1,5 @@
 from random import randint
-from ItemChest.ItemChestData import stats, materials, types, attributes, qualities
+from item_chest.ItemChestData import stats, materials, types, attributes, qualities
 
 print("Dans le coffre se trouve ...\n")
 
@@ -58,12 +58,12 @@ while True:
     # On gère l'ajout de la qualité de l'objet
     if itemAttribute.name == "aléatoire": # Cas special pour "aléatoire"
         qualityNumber = itemMaterial.quality + itemAttribute.qualityModifier + randint(-5, 5)
-        qualityNumber = max({qualityNumber, 0})
-        qualityNumber = min({qualityNumber, 12})
+        qualityNumber = max(qualityNumber, 0)
+        qualityNumber = min(qualityNumber, 12)
     else:
         qualityNumber = itemMaterial.quality + itemAttribute.qualityModifier + randint(-1, 1)
-        qualityNumber = max({qualityNumber, 0})
-        qualityNumber = min({qualityNumber, 12})
+        qualityNumber = max(qualityNumber, 0)
+        qualityNumber = min(qualityNumber, 12)
 
     quality = qualities[qualityNumber][randint(0, len(qualities[qualityNumber]) - 1)]
 
