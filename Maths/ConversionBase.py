@@ -1,4 +1,6 @@
-def tenToBinary(value10):
+from typing import Union
+
+def tenToBinary(value10: int) -> int:
     value2 = ""
     n = 0
     while 2**n <= value10:
@@ -13,7 +15,7 @@ def tenToBinary(value10):
 
     return int(value2)
 
-def binaryToDecimal(value2):
+def binaryToDecimal(value2: Union[int, str]) -> int:
     value2 = str(value2)
     n = len(value2) - 1
     value10 = 0
@@ -24,7 +26,7 @@ def binaryToDecimal(value2):
     
     return value10
 
-def binaryToHexadecimal(value2):
+def binaryToHexadecimal(value2: Union[int, str]) -> None:
     value2 = str(value2)
 
 

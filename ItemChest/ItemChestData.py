@@ -354,4 +354,16 @@ Ultime = Quality("Ultime", 16, 8)
 Omniscient = Quality("Omniscient", 10, 12)
 
 
-qualities = [[Maudit],[Merdique, Cassé],[Mauvais,Poussiéreux],[Banal],[Commun,Curieux],[PeuCommun,Étrange],[Rare,Antique],[Précieux,Enchanté],[Mythique,Mystique],[Légendaire,Relique],[Divin,Démoniaque],[Dimensionel,Galactique],[Transcendant,Ultime,Omniscient]]
+qualities = [[Maudit],
+            [Merdique, Cassé],
+            [Mauvais, Poussiéreux],
+            [Banal],
+            [Commun, Curieux],
+            [PeuCommun, Étrange],
+            [Rare, Antique],
+            [Précieux, Enchanté],
+            [Mythique, Mystique],
+            [Légendaire, Relique],
+            [Divin, Démoniaque],
+            [Dimensionel, Galactique],
+            [Transcendant, Ultime, Omniscient]]

@@ -1,5 +1,5 @@
 from random import randint
-from ItemChestData import stats, materials, types, attributes, qualities
+from ItemChest.ItemChestData import stats, materials, types, attributes, qualities
 
 print("Dans le coffre se trouve ...\n")
 

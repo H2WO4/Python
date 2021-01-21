@@ -1,10 +1,40 @@
 """ Importing Ressources """
 
 import tkinter as tk
+from typing import Any, Tuple
 
 
 
 """ Object Definition """
+
+class Group:
+    """
+    The Group object is used to represent a list of elements\n
+    It contains information about its name, as well as an ordered list of its members
+    """
+
+    def __init__(self, name: str) -> None:
+        """ Initialize a Group object """
+        # Init - Setting attributes
+        self.name = name
+        self.elements = []
+
+        # Init - Adding itself to lists for future indexing
+        Groups[self.name] = self
+
+
+    def __str__(self) -> str:
+        """ Return the name value of the object """
+        # Overload the 'str()' operator to return the group's name
+        return self.name
+    
+    def isOnlyNonReveal(self) -> bool:
+        for i in self.elements:
+            if i.revealed:
+                return True
+        return False
+
+
 
 class Element:
     """
@@ -13,7 +43,7 @@ class Element:
     its state and the list of its recipes
     """
 
-    def __init__(self, name, recipes, group = None, revealed = False):
+    def __init__(self, name: str, recipes: str, group: Group = None, revealed: bool = False) -> None:
         """ Initialize an Element object """
         # Init - Setting attributes
         self.name = name
@@ -32,13 +62,13 @@ class Element:
             ElementsNotCreated[self.name] = self
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         """ Return the name value of the object """
         # Overload the 'str()' operator to return the element's name
         return self.name
 
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         """ Compare two Element object, using their name values """
         # Overload of the '<' operator to allow list sorting
         if type(other) != Element:
@@ -50,7 +80,7 @@ class Element:
         return False
 
 
-    def reveal(self):
+    def reveal(self) -> None:
         """ Reveal this object, making it usable in-game """
         # Manages lists changes when a new element is revealed
         if not self.revealed:
@@ -58,43 +88,10 @@ class Element:
             ElementsCreated[self.name] = self
             del ElementsNotCreated[self.name]
 
-        return None
 
-
-    def initialize(self):
+    def initialize(self) -> None:
         """ Initialize the recipes list of the object """
         self.recipes = eval(self.recipes)
-
-        return None
-
-
-
-class Group:
-    """
-    The Group object is used to represent a list of elements\n
-    It contains information about its name, as well as an ordered list of its members
-    """
-
-    def __init__(self, name):
-        """ Initialize a Group object """
-        # Init - Setting attributes
-        self.name = name
-        self.elements = []
-
-        # Init - Adding itself to lists for future indexing
-        Groups[self.name] = self
-
-
-    def __str__(self):
-        """ Return the name value of the object """
-        # Overload the 'str()' operator to return the group's name
-        return self.name
-    
-    def isOnlyNonReveal(self):
-        for i in self.elements:
-            if i.revealed:
-                return True
-        return False
 
 
 
@@ -218,13 +215,13 @@ for i in Elements:
 """ Save file system """
 
 # Defining two functions to allow encoding and decoding for the save file
-def encode(strToEncode):
+def encode(strToEncode: str) -> str:
     """ Take a string and return its encoded version """
     # Uses a single-line for instruction to manually convert each character to
     # hexadecimal and apply a sequence of operations
-    return ''.join([str(hex((ord(n) * 2 + 3) * 7)) for n in strToEncode])
+    return "".join([str(hex((ord(n) * 2 + 3) * 7)) for n in strToEncode])
 
-def decode(strToDecode):
+def decode(strToDecode: str) -> str:
     """ Take an encoded string and return its original """
     # Uses a single-line for instruction to manually convert each character back to Unicode
     return chr((int(strToDecode, 16) // 7 - 3) // 2)
@@ -241,7 +238,7 @@ try:
 except FileNotFoundError:
     # If no savefile is present, ignore
     pass
-except ZeroDivisionError:
+except:
     print("Corrupted savefile!\n")
 
 
@@ -266,20 +263,20 @@ consoleText.pack()
 # Define three functions to handle selecting a group
 group1 = list(Groups)[0]
 group2 = list(Groups)[0]
-def selectGroup1(selection):
+def selectGroup1(selection: Tuple[int, ...]) -> None:
     global group1
     group1 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
     listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed]))
     listElements1["listvariable"] = listboxElements1
 
-def selectGroup2(selection):
+def selectGroup2(selection: Tuple[int, ...]) -> None:
     global group2
     group2 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
     listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed]))
     listElements2["listvariable"] = listboxElements2
 
 
-def actualizeGroups():
+def actualizeGroups() -> None:
     global group1, group2
     listGroups1["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
     listGroups2["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
@@ -292,24 +289,24 @@ def actualizeGroups():
 # Define a function to handle selecting an element
 element1 = 0
 element2 = 0
-def selectElement1(selection1):
+def selectElement1(selection1) -> None:
     global element1, element2, group1, group2
     elementGroup1 = [i for i in group1.elements if i.revealed]
     element1 = elementGroup1[selection1[0]]
     spacesToAdd1 = max([len(i) for i in Elements]) - len(element1.name) + 1
-    if element2 != 0:
+    if not isinstance(element2, int):
         spacesToAdd2 = max([len(i) for i in Elements]) - len(element2.name) + 1
         fusionPreview["text"] = " " * spacesToAdd1 + "{} + {}".format(element1.name, element2.name) + " " * spacesToAdd2
     else:
         spacesToAdd2 = max([len(i) for i in Elements]) + 1
         fusionPreview["text"] = " " * spacesToAdd1 + "{} + ".format(element1.name) + " " * spacesToAdd2
 
-def selectElement2(selection2):
+def selectElement2(selection2) -> None:
     global element1, element2, group1, group2
     elementGroup2 = [i for i in group2.elements if i.revealed]
     element2 = elementGroup2[selection2[0]]
     spacesToAdd2 = max([len(i) for i in Elements]) - len(element2.name) + 1
-    if element1 != 0:
+    if not isinstance(element1, int):
         spacesToAdd1 = max([len(i) for i in Elements]) - len(element1.name) + 1
         fusionPreview["text"] = " " * spacesToAdd1 + "{} + {}".format(element1.name, element2.name) + " " * spacesToAdd2
     else:
@@ -342,7 +339,7 @@ listElements2.bind("<Double-1>", lambda e: selectElement2(listElements2.curselec
 
 
 # Define the fuse function for the Fuse button
-def fuse():
+def fuse() -> None:
     # Pull the global variables
     global element1, element2, consoleText, logText
     # Test if two elements were selected
