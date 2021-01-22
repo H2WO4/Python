@@ -1,6 +1,5 @@
 from typing import List
 
-
 # Object Definition
 class Stat:
     def __init__(self, name: str, type: str, modifier: float, special: bool = False):
@@ -13,25 +12,23 @@ class Stat:
     
     def __str__(self):
         return self.name
-
 class Type:
-    def __init__(self, name: str, stat: Stat, statModifier: float, gender: int):
+    def __init__(self, name: str, stat: Stat, statMod: float, gender: int):
         self.name = name
         self.stat = stat
-        self.statModifier = statModifier
+        self.statMod = statMod
         self.gender = gender
 
         types.append(self)
     
     def __str__(self):
         return self.name
-
 class Material:
-    def __init__(self, name: str, stat: Stat, quality: int, statModifier: float, feminine: int, plural: int = 0):
+    def __init__(self, name: str, stat: Stat, quality: int, statMod: float, feminine: int, plural: int = 0):
         self.name = name
         self.stat = stat
         self.quality = quality
-        self.statModifier = statModifier
+        self.statMod = statMod
         self.feminine = feminine
         self.plural = plural
 
@@ -39,13 +36,12 @@ class Material:
     
     def __str__(self):
         return self.name
-
 class Attribute:
-    def __init__(self, name: str, stat: Stat, qualityModifier: int, statModifier: float, feminine: int, plural: int = 0):
+    def __init__(self, name: str, stat: Stat, qualMod: int, statMod: float, feminine: int, plural: int = 0):
         self.name = name
         self.stat = stat
-        self.qualityModifier = qualityModifier
-        self.statModifier = statModifier
+        self.qualMod = qualMod
+        self.statMod = statMod
         self.feminine = feminine
         self.plural = plural
 
@@ -53,7 +49,6 @@ class Attribute:
     
     def __str__(self):
         return self.name
-
 class Quality:
     def __init__(self, name: str, multiplier: float, totalStats: int):
         self.name = name
@@ -62,7 +57,6 @@ class Quality:
     
     def __str__(self):
         return self.name
-
 
 
 stats: List[Stat] = []
@@ -122,6 +116,7 @@ Dinousaures = Stat("Dinousaures", "Flat", 7, True)
 Null = Stat("Null", "Dual", 0, True) # Used when no aditional stat is added
 Random = Stat("Random", "Dual", 0, True) # Add a random stat
 Copy = Stat("Copy", "Dual", 0, True) # Copy the Type stat
+
 
 
 # Definition of Types
@@ -185,6 +180,8 @@ Falchion = Type("Falchion", Concentration, 1.5, 0)
 Kukri = Type("Kukri", Attaque, 0.6, 0)
 Kunai = Type("Kunai", PénétrationPhysique, 0.8, 0)
 Taser = Type("Taser", Electrocution, 0.8, 0)
+Sniper = Type("Sniper", Précision, 2, 0)
+
 
 
 # Definition of ItemMaterials
@@ -243,6 +240,8 @@ opale = Material("d'opale", AptEau, 8, 2, 0)
 jade = Material("de jade", ArgentRécolté, 8, 2, 0)
 platine = Material("de platine", Puissance, 7, 1.5, 0)
 lave = Material("de lave", AptFeu, 6, 2, 0)
+chair = Material("de chair", Régénération, 5, 0.5, 0)
+
 
 
 # Definition of ItemAttributes
@@ -329,14 +328,15 @@ Yego = Attribute("d'Yego", Dinousaures, 2, 1, 0)
 D4C = Attribute("d'Iforci", AptDimensionelle, 3, 1, 0)
 
 
+
 # Definition of Qualities
 Maudit = Quality("Maudit", -6, 6)
 Merdique = Quality("Merdique", -3, 2)
 Cassé = Quality("Cassé", -5, 0)
 Mauvais = Quality("Mauvaise Qualité", -1, 1)
 Poussiéreux = Quality("Poussiéreux", -2, 0)
-Banal = Quality("Banal", 0, 0)
-Basique = Quality("Basique", 0, 0)
+Banal = Quality("Banal", 0.5, 0)
+Basique = Quality("Basique", 0, 1)
 Commun = Quality("Commun", 1, 0)
 Curieux = Quality("Curieux", 0.5, 1)
 PeuCommun = Quality("Peu Commun", 2, 0)
@@ -356,7 +356,6 @@ Galactique = Quality("Galactique", 16, 3)
 Transcendant = Quality("Transcendant", 20, 5)
 Ultime = Quality("Ultime", 16, 8)
 Omniscient = Quality("Omniscient", 10, 12)
-
 
 qualities = [[Maudit],
             [Merdique, Cassé],
