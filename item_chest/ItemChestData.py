@@ -2,6 +2,14 @@ from typing import List
 
 # Object Definition
 class Stat:
+    """
+    L'objet Stat est utilisé pour représenter une stat pour un objet.\n
+    Il possède plusieurs attributs :
+     - name : Définit le nom de la stat
+     - type : Définit si la stat est relative (%), flat ou autre
+     - modifier: Définit le multiplicateur à appliquer à la stat
+     - special : Définit si la stat apparait aléatoirement ou est spécifique à un attibut/matériau
+    """
     def __init__(self, name: str, type: str, modifier: float, special: bool = False):
         self.name = name
         self.type = type
@@ -13,6 +21,14 @@ class Stat:
     def __str__(self):
         return self.name
 class Type:
+    """
+    L'objet Type est utilisé pour représenter un type d'objet.\n
+    Il possède plusieurs attributs :
+     - name : Définit le nom du type
+     - stat : Définit quelle stat est attaché au type
+     - statModifier: Définit le multiplicateur à appliquer à la stat
+     - gender : Définit si l'objet est masculin ou féminin ou pluriel (0 et 2: masculin; 1 et 3: féminin; 2 et 3: pluriel)
+    """
     def __init__(self, name: str, stat: Stat, statMod: float, gender: int):
         self.name = name
         self.stat = stat
@@ -24,7 +40,16 @@ class Type:
     def __str__(self):
         return self.name
 class Material:
-    def __init__(self, name: str, stat: Stat, quality: int, statMod: float, feminine: int, plural: int = 0):
+    """
+    L'objet Material est utilisé pour représenter un matériau pour un objet.\n
+    Il possède plusieurs attributs :
+     - name : Définit le nom du matériau
+     - stat : Définit quelle stat est attaché au matériau
+     - statModifier: Définit le multiplicateur à appliquer à la stat
+     - feminine : Définit quel féminin appliquer à l'objet (0: aucun; 1: +e; 2: eux/euse; 3: eur/rice; 4: +le)
+     - plural : Définit si l'on doit appliquer le pluriel à l'objet
+    """
+    def __init__(self, name: str, stat: Stat, quality: int, statMod: float, feminine: int, plural: bool = True):
         self.name = name
         self.stat = stat
         self.quality = quality
@@ -37,7 +62,16 @@ class Material:
     def __str__(self):
         return self.name
 class Attribute:
-    def __init__(self, name: str, stat: Stat, qualMod: int, statMod: float, feminine: int, plural: int = 0):
+    """
+    L'objet Attribute est utilisé pour représenter un attribut pour un objet.\n
+    Il possède plusieurs attributs :
+     - name : Définit le nom de l'attribut
+     - stat : Définit quelle stat est attaché à l'attribut
+     - statModifier: Définit le multiplicateur à appliquer à la stat
+     - feminine : Définit quel féminin appliquer à l'objet (0: aucun; 1: +e; 2: eux/euse; 3: eur/rice; 4: +le)
+     - plural : Définit si l'on doit appliquer le pluriel à l'objet
+    """
+    def __init__(self, name: str, stat: Stat, qualMod: int, statMod: float, feminine: int, plural: bool = False):
         self.name = name
         self.stat = stat
         self.qualMod = qualMod
@@ -50,6 +84,13 @@ class Attribute:
     def __str__(self):
         return self.name
 class Quality:
+    """
+    L'objet Quality est utilisé pour représenter une qualité d'objet, determinant combien de stats il aura.\n
+    Il possède plusieurs attributs :
+     - name : Définit le nom de la qualité
+     - multiplier: Définit le multiplicateur à appliquer aux stats de l'objet
+     - totalStats : Définit combien de stats rajoute cette qualité
+    """
     def __init__(self, name: str, multiplier: float, totalStats: int):
         self.name = name
         self.multiplier = multiplier
@@ -185,7 +226,7 @@ Sniper = Type("Sniper", Précision, 2, 0)
 
 
 # Definition of ItemMaterials
-doré = Material("doré", ArgentRécolté, 7, 1, 1)
+doré = Material("doré", ArgentRécolté, 7, 1, 1, True)
 feu = Material("de feu", AptFeu, 5, 1, 0)
 glace = Material("de glace", AptGlace, 5, 1, 0)
 argent = Material("d'argent", DégâtsMortsVivants, 6, 2, 0)
@@ -199,7 +240,7 @@ titane = Material("de titane", Copy, 7, 2, 0)
 foudre = Material("de foudre", AptFoudre, 5, 1, 0)
 crystal = Material("de crystal", Résistance, 9, 1.5, 0)
 quartz = Material("de quartz", DégâtsCritique, 8, 1.5, 0)
-décoré = Material("décoré", Copy, 10, 2, 1, 1)
+décoré = Material("décoré", Copy, 10, 2, 1, True)
 émeraude = Material("d'émeraude", Empoisonement, 8, 0.5, 0)
 rubis = Material("de rubis", Vamprisme, 8, 0.5, 0)
 saphire = Material("de saphire", Agilité, 8, 0.5, 0)
@@ -247,70 +288,70 @@ chair = Material("de chair", Régénération, 5, 0.5, 0)
 # Definition of ItemAttributes
 Témor = Attribute("de Témor", Attaque, 2, 3, 0)
 Tamaire = Attribute("de Tamaire", Résistance, 2, 3, 0)
-magique = Attribute("magique", Intelligence, 1, 1.5, 0, 1)
-pointu = Attribute("pointu", PénétrationPhysique, 0, 0.5, 1)
-enflammé = Attribute("enflammé", AptFeu, 0, 1, 1)
-cassé = Attribute("cassé", Null, -2, 0, 1, 1)
-mouillé = Attribute("mouillé", AptEau, 0, 1, 1)
+magique = Attribute("magique", Intelligence, 1, 1.5, 0, True)
+pointu = Attribute("pointu", PénétrationPhysique, 0, 0.5, 1, True)
+enflammé = Attribute("enflammé", AptFeu, 0, 1, 1, True)
+cassé = Attribute("cassé", Null, -2, 0, 1, True)
+mouillé = Attribute("mouillé", AptEau, 0, 1, 1, True)
 KLitThé = Attribute("de K-Lit-Thé", Copy, 2, 2, 0)
-inutile = Attribute("inutile", Null, -1, 0, 0, 1)
-froid = Attribute("froid", AptGlace, 0, 1, 1)
-volant = Attribute("volant", AptAir, 0, 1, 1)
+inutile = Attribute("inutile", Null, -1, 0, 0, True)
+froid = Attribute("froid", AptGlace, 0, 1, 1, True)
+volant = Attribute("volant", AptAir, 0, 1, 1, True)
 Patesriz = Attribute("de la Patesriz", Copy, 2, 0.5, 0)
 force = Attribute("de force", Attaque, 0, 1.5, 0)
 courage = Attribute("de courage", Résistance, 0, 1.5, 0)
 sagesse = Attribute("de sagesse", Sagesse, 0, 1.5, 0)
 vie = Attribute("de vie", Régénération, 0, 0.8, 0)
-vivant = Attribute("vivant", Régénération, 0, 0.5, 1)
+vivant = Attribute("vivant", Régénération, 0, 0.5, 1, True)
 Paix = Attribute("de la Paix", Vitalité, 1, 1.5, 0)
 gel = Attribute("du gel", AptGlace, 0, 1.5, 0)
-sanguin = Attribute("sanguin", Vamprisme, 0, 0.5, 1)
+sanguin = Attribute("sanguin", Vamprisme, 0, 0.5, 1, True)
 tonnere = Attribute("du tonnere", AptFoudre, 0, 1.5, 0)
 toner = Attribute("du toner", Null, 1, 0, 0)
 sympa = Attribute("sympa", Copy, 1, 0.3, 0)
 merde = Attribute("de merde", Null, -3, 0, 0)
-usé = Attribute("usé", Null, -1, 0, 1, 1)
-lourd = Attribute("lourd", Copy, 0, 0.5, 1)
-naturel = Attribute("naturel", Régénération, 0, 0.3, 4)
-piquant = Attribute("piquant", RenvoiDégâts, 0, 0.5, 1)
-épineux = Attribute("épineux", RenvoiDégâts, 0, 0.8, 2)
+usé = Attribute("usé", Null, -1, 0, 1, True)
+lourd = Attribute("lourd", Copy, 0, 0.5, 1, True)
+naturel = Attribute("naturel", Régénération, 0, 0.3, 4, True)
+piquant = Attribute("piquant", RenvoiDégâts, 0, 0.5, 1, True)
+épineux = Attribute("épineux", RenvoiDégâts, 0, 0.8, 2, True)
 vitesse = Attribute("de vitesse", Vitesse, 0, 1, 0)
 chance = Attribute("de chance", Chance, 0, 1, 0)
-chanceux = Attribute("chanceux", Chance, 0, 1.5, 2)
-Toncha = Attribute("dans Toncha", Copy, 2, 1, 0)
-légendaire = Attribute("légendaire", Copy, 3, 3, 0, 1)
+chanceux = Attribute("chanceux", Chance, 0, 1.5, 2, True)
+Toncha = Attribute("d'Antoncha", Copy, 2, 1, 0)
+légendaire = Attribute("légendaire", Copy, 3, 3, 0, True)
 légende = Attribute("de légende", Copy, 3, 4, 0)
 protecteur = Attribute("protecteur", Résistance, 0, 2, 3)
-merdique = Attribute("merdique", Null, -3, 0, 0, 1)
+merdique = Attribute("merdique", Null, -3, 0, 0, True)
 MédineShina = Attribute("de Médine-Shina", Null, -3, 0, 0)
 Iochi = Attribute("de Iochi", Attaque, 1, 1.2, 0)
 Ardiké = Attribute("d'Ardiké", Attaque, 1, 1.5, 0)
-éléctrique = Attribute("éléctrique", AptFoudre, 0, 1, 0, 1)
+éléctrique = Attribute("éléctrique", AptFoudre, 0, 1, 0, True)
 Idicong = Attribute("d'Idicong", Agilité, 1, 0.8, 0)
-nul = Attribute("nul", Null, -2, 0, 4)
+nul = Attribute("nul", Null, -2, 0, 4, True)
 Sauron = Attribute("de Sauron", Attaque, 1, 2, 0)
 Passito = Attribute("des Passito", Null, -3, 0, 0)
 Tanosse = Attribute("de Tanosse", Copy, 2, 2, 0)
-dimensionel = Attribute("dimensionel", Copy, 3, 3, 4)
-transcendant = Attribute("transcendant", Copy, 5, 5, 1)
-ultime = Attribute("ultime", Copy, 127, 6, 0, 1)
+dimensionel = Attribute("dimensionel", Copy, 3, 3, 4, True)
+transcendant = Attribute("transcendant", Copy, 5, 5, 1, True)
+ultime = Attribute("ultime", Copy, 127, 6, 0, True)
 loup = Attribute("du loup", Attaque, 0, 2, 0)
 ours = Attribute("de l'ours", Puissance, 0, 2, 0)
 serpent = Attribute("du serpent", Empoisonement, 0, 2, 0)
 lievre = Attribute("du lièvre", Agilité, 0, 2, 0)
 renard = Attribute("du renard", Dextérité, 0, 2, 0)
-lunaire = Attribute("lunaire", AptTénébres, 2, 2, 0, 1)
-solaire = Attribute("solaire", AptLumière, 2, 2, 0, 1)
+lunaire = Attribute("lunaire", AptTénébres, 2, 2, 0, True)
+solaire = Attribute("solaire", AptLumière, 2, 2, 0, True)
 EA = Attribute("d'Ihé", ContenuPayant, -3, 1, 0)
 Aegis = Attribute("d'Aegis", AptLumière, 3, 3, 0)
-alchimique = Attribute("alchimique", AptÉlémentaire, 2, 1, 0, 1)
-philosophal = Attribute("philosophal", AptTemporelle, 4, 1, 1)
+alchimique = Attribute("alchimique", AptÉlémentaire, 2, 1, 0, True)
+philosophal = Attribute("philosophal", AptTemporelle, 4, 1, 1, True)
 Arbie = Attribute("d'Arbie", Triche, 3, 1, 0)
 Onald = Attribute("d'Onald", PatriotismeAveugle, -3, 1, 0)
-aléatoire = Attribute("aléatoire", Chance, 0, 1, 0, 1)
+aléatoire = Attribute("aléatoire", Chance, 0, 1, 0, True)
 Aispetrant = Attribute("des Aispet-Rant", Null, -127, 0, 0)
 DDD = Attribute("des Dédais", Puissance, 1, 3, 0)
-complexe = Attribute("complexe", Random, 1, 1, 0, 1)
+complexe = Attribute("complexe", Random, 1, 1, 0, True)
 Édal = Attribute("d'Édal", Chance, 1, 2, 0)
 Spidreun = Attribute("du Spid-Reun", Vitesse, 1, 5, 0)
 soldat = Attribute("du soldat", Attaque, 0, 1.5, 0)
@@ -327,7 +368,7 @@ Io = Attribute("d'Io", AptTemporelle, 3, 1, 0)
 Yego = Attribute("d'Yego", Dinousaures, 2, 1, 0)
 D4C = Attribute("d'Iforci", AptDimensionelle, 3, 1, 0)
 
-
+for i in range(100): types.append(Botte)
 
 # Definition of Qualities
 Maudit = Quality("Maudit", -6, 6)
