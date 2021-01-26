@@ -2,8 +2,6 @@ import tkinter as tk
 import os, json, glob
 from typing import Any, Dict, List, Set, Tuple, Union
 
-
-
 def neighbors(x: int, y: int) -> Tuple[Any, ...]:
     output = []
     for a, b in [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if (abs(a) + abs(b) > 0)]:
@@ -12,7 +10,6 @@ def neighbors(x: int, y: int) -> Tuple[Any, ...]:
         except:
             pass
     return tuple(output)
-
 def neighbors_2(x: int, y: int) -> Tuple[Any, ...]:
     output = []
     for a, b in [(a, b) for a in [-2, -1, 0, 1, 2] for b in [-2, -1, 0, 1, 2] if (abs(a) + abs(b) > 0)]:
@@ -21,7 +18,6 @@ def neighbors_2(x: int, y: int) -> Tuple[Any, ...]:
         except:
             pass
     return tuple(output)
-
 def direct_neighbors(x: int, y: int) -> Tuple[Any, ...]:
     output = []
     for a, b in [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if (abs(a) + abs(b) == 1)]:
@@ -30,7 +26,6 @@ def direct_neighbors(x: int, y: int) -> Tuple[Any, ...]:
         except:
             pass
     return tuple(output)
-
 def direct_neighbors_2(x: int, y: int) -> Tuple[Any, ...]:
     output = []
     for a, b in [(a, b) for a in [-2, -1, 0, 1, 2] for b in [-2, -1, 0, 1, 2] if (abs(a) + abs(b) in [1, 2])]:
@@ -39,8 +34,6 @@ def direct_neighbors_2(x: int, y: int) -> Tuple[Any, ...]:
         except:
             pass
     return tuple(output)
-
-
 
 class Ressource:
     def __init__(self, name: str, Id: str) -> None:
@@ -54,9 +47,6 @@ class Ressource:
     
     def gain(self, amount: int) -> None:
         self.amount += amount
-
-
-
 class Building:
     def __init__(self, rawData: Dict[str, Any]) -> None:
         self.name: str = rawData["name"]
@@ -85,9 +75,6 @@ class Building:
     def activate(self, x: int, y: int) -> None:
         for i in self.yields:
             i.produce(x, y)
-
-
-
 class Yield:
     def __init__(self, rawData: Dict[str, Any]) -> None:
         self.type: str = rawData["type"]
@@ -98,9 +85,6 @@ class Yield:
     def produce(self, x: int, y: int) -> None:
         for i in self.gains:
             i.calculate(x, y)
-
-
-
 class Gain:
     def __init__(self, rawData: Dict[str, Any]) -> None:
         self.ressource: str = rawData["ressource"]
@@ -114,9 +98,6 @@ class Gain:
         for i in self.modifiers:
             bonus += i.calculate(self.amount + bonus, x, y)
         RessourceList[self.ressource].gain(self.amount + bonus)
-
-
-
 class Modifier:
     def __init__(self, rawData: Dict[str, Any]) -> None:
         self.scope: str = rawData["scope"]
@@ -189,9 +170,6 @@ class Modifier:
                 bonus += amount * (self.amount - 1)
         
         return bonus
-
-
-
 class Target:
     def __init__(self, rawData: Dict[str, Any]) -> None:
         self.type: str = rawData["type"]
@@ -201,15 +179,9 @@ class Target:
         if self.type == "tag":
             return {BuildingList[i] for i in BuildingList if BuildingList[i].hasTag(self.target)}
         return {BuildingList[self.target]}
-
-
-
 class Tag:
     def __init__(self, rawData: Dict[str, Any]) -> None:
         self.name: str = rawData["name"]
-
-
-
 class City:
     def __init__(self, name: str, size: int) -> None:
         self.name = name
@@ -230,9 +202,6 @@ class City:
         for i in range(len(self.grid)):
             for j in range(len(self.grid[i])):
                 self[i,j].activate(i, j)
-
-
-
 class GridLabel(tk.Label):
 
     def __init__(self, x: int, y: int, *args: Any, **kwargs: Any) -> None:
@@ -244,27 +213,23 @@ class GridLabel(tk.Label):
     def displayDescription(self, _: Any) -> None:
         descriptionText["text"] = newCity[self.x, self.y].name + "\n" * 2 + newCity[self.x, self.y].description + "\n" + " " * 100
 
-
-
 BuildingListRaw: List[Dict[str, Any]] = []
 BuildingList: Dict[str, Building] = {}
 BuildingImages: Dict[str, tk.Image] = {}
 
 RessourceList: Dict[str, Ressource] = {}
 
-
-
 path = "/Citylization"
 for filename in glob.glob(os.path.join(os.getcwd() + path, "*.json")):
     with open(os.path.join(os.getcwd(), filename), "r") as f:
         BuildingListRaw.append(json.load(f))
-
 for data in BuildingListRaw:
     Building(data)
 
 citySize = 9
 
 newCity = City("A", citySize//2)
+turn = 0
 
 Gold = Ressource("Gold", "gold")
 Wheat = Ressource("Wheat", "wheat")
@@ -273,7 +238,6 @@ Wood = Ressource("Wood", "wood")
 
 
 """ Graphical Interface """
-
 
 # Define the update function
 def update() -> None:
@@ -286,15 +250,18 @@ def update() -> None:
     
     ressourceText["text"] = "\n".join(["{}: {}".format(RessourceList[i].name, RessourceList[i].amount) for i in RessourceList]) + ("\n" + " " * 40)
 
-
 # Define the end turn command
 def endTurn() -> None:
+    global turn
+    turn += 1
+    logText.append("Turn {} ended".format(turn))
+    consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
+    
     for i in range(newCity.size):
         for j in range(newCity.size):
             newCity[i,j].activate(i, j)
     
     update()
-
 
 # Define the build command
 def build(building: Building, x: int, y: int) -> None:

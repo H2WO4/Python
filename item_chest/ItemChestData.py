@@ -151,7 +151,7 @@ CrimesGuerre = Stat("Crimes de Guerre", "Flat", 8.8, True)
 ContenuPayant = Stat("Contenu Payant", "Relative", 0.6, True)
 Triche = Stat("Triche", "Relative", 2, True)
 PacteDiable = Stat("Pactes avec le diable", "FixedFlat", 666, True)
-Dinousaures = Stat("Dinousaures", "Flat", 7, True)
+Dinosaures = Stat("Dinosaures", "Flat", 7, True)
 
 # System Stats
 Null = Stat("Null", "Dual", 0, True) # Used when no aditional stat is added
@@ -258,7 +258,7 @@ cuivre = Material("de cuivre", Résistance, 6, 0.7, 0)
 papier = Material("de papier", Null, 1, 0, 0)
 acier = Material("d'acier", Durabilité, 7, 1.2, 0)
 pierre = Material("de pierre", Attaque, 3, 0.6, 0)
-mithril = Material("de mithril", Durabilité, 12, 4, 0)
+mythril = Material("de mythril", Durabilité, 12, 4, 0)
 orichalque = Material("d'orichalque", Attaque, 11, 2, 0)
 vibranium = Material("de vibranium", RenvoiDégâts, 10, 1, 0)
 osmium = Material("d'osmium", Copy, 9, 1.2, 0)
@@ -332,9 +332,9 @@ nul = Attribute("nul", Null, -2, 0, 4, True)
 Sauron = Attribute("de Sauron", Attaque, 1, 2, 0)
 Passito = Attribute("des Passito", Null, -3, 0, 0)
 Tanosse = Attribute("de Tanosse", Copy, 2, 2, 0)
-dimensionel = Attribute("dimensionel", Copy, 3, 3, 4, True)
-transcendant = Attribute("transcendant", Copy, 5, 5, 1, True)
-ultime = Attribute("ultime", Copy, 127, 6, 0, True)
+dimensionel = Attribute("dimensionel", Copy, 5, 3, 4, True)
+transcendant = Attribute("transcendant", Copy, 127, 5, 1, True)
+ultime = Attribute("ultime", Copy, 6, 6, 0, True)
 loup = Attribute("du loup", Attaque, 0, 2, 0)
 ours = Attribute("de l'ours", Puissance, 0, 2, 0)
 serpent = Attribute("du serpent", Empoisonement, 0, 2, 0)
@@ -365,7 +365,7 @@ médecin = Attribute("du médecin", Vitalité, 0, 1.5, 0)
 Eros = Attribute("d'Eros", Charme, 0, 3, 0)
 Émont = Attribute("d'Émont", PacteDiable, 0, 1, 0)
 Io = Attribute("d'Io", AptTemporelle, 3, 1, 0)
-Yego = Attribute("d'Yego", Dinousaures, 2, 1, 0)
+Yego = Attribute("d'Yego", Dinosaures, 2, 1, 0)
 D4C = Attribute("d'Iforci", AptDimensionelle, 3, 1, 0)
 
 
@@ -383,31 +383,36 @@ Curieux = Quality("Curieux", 0.5, 1)
 PeuCommun = Quality("Peu Commun", 2, 0)
 Étrange = Quality("Étrange", 1, 2)
 Rare = Quality("Rare", 4, 1)
-Antique = Quality("Antique", 6, 2)
+Antique = Quality("Antique", 5, 0)
+Magique = Quality("Magique", 2, 3)
 Précieux = Quality("Précieux", 7, 0)
 Enchanté = Quality("Enchanté", 4, 3)
 Mythique = Quality("Mythique", 9, 1)
 Mystique = Quality("Mystique", 6, 6)
 Légendaire = Quality("Légendaire", 9, 4)
 Relique = Quality("Relique", 12, 1)
-Divin = Quality("Divin", 12, 4)
-Démoniaque = Quality("Démoniaque", 16, 2)
-Dimensionel = Quality("Dimensionel", 13, 5)
+Cosmique = Quality("Cosmique", 15, 0)
+Stellaire = Quality("Stellaire", 11, 3)
+Divin = Quality("Divin", 13, 4)
+Démoniaque = Quality("Démoniaque", 20, 2) # Stats additionels sont à multiplicateur -6
 Galactique = Quality("Galactique", 16, 3)
-Transcendant = Quality("Transcendant", 20, 5)
-Ultime = Quality("Ultime", 16, 8)
-Omniscient = Quality("Omniscient", 10, 12)
+Ultime = Quality("Ultime", 16, 5)
+Dimensionel = Quality("Dimensionel", 13, 8)
+Transcendant = Quality("Transcendant", 20, 6)
+Omniscient = Quality("Omniscient", 12, 12)
+Singulier = Quality("Singulier", 6, 20)
 
-qualities = [[Maudit],
-            [Merdique, Cassé],
-            [Mauvais, Poussiéreux],
-            [Banal, Basique],
-            [Commun, Curieux],
-            [PeuCommun, Étrange],
-            [Rare, Antique],
-            [Précieux, Enchanté],
-            [Mythique, Mystique],
-            [Légendaire, Relique],
-            [Divin, Démoniaque],
-            [Dimensionel, Galactique],
-            [Transcendant, Ultime, Omniscient]]
+qualities = [[Maudit], # Rang -3
+            [Merdique, Cassé], # Rang -2
+            [Mauvais, Poussiéreux], # Rang -1
+            [Banal, Basique], # Rang 0
+            [Commun, Curieux], # Rang 1
+            [PeuCommun, Étrange], # Rang 2
+            [Rare, Antique, Magique], # Rang 3
+            [Précieux, Enchanté], # Rang 4
+            [Mythique, Mystique], # Rang 5
+            [Légendaire, Relique], # Rang 6
+            [Stellaire, Cosmique], # Rang 7
+            [Divin, Démoniaque, Galactique], # Rang 8
+            [Ultime, Dimensionel], # Rang 9
+            [Transcendant, Omniscient, Singulier]] # Rang 10

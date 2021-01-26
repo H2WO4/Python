@@ -1,4 +1,4 @@
-from random import choice, randint
+from random import choice, randint, sample
 from typing import Union
 from item_chest.ItemChestData import Attribute, Material, Type, stats, materials, types, attributes, qualities
 
@@ -21,7 +21,7 @@ while True:
     elif iType.gender in (1, 3) and iAttr.feminine == 4: title += "le"
     if iType.gender >= 2 and iAttr.plural: title += "s"
     if iAttr.name != "aléatoire": qualNum = min(max(iMat.quality + iAttr.qualMod + randint(-1, 1), 0), 12) # On gère l'ajout de la qualité de l'objet
-    else: qualNum = min(max(iMat.quality + iAttr.qualMod + randint(-5, 5), 0), 12) # Cas special pour "aléatoire"
+    else: qualNum = min(max(iMat.quality + iAttr.qualMod + randint(-3, 3), 0), 12) # Cas special pour "aléatoire"
     quality = choice(qualities[qualNum]) # On prend une qualité aléatoire correspondant au rang de l'objet
     item = quality.name # On l'ajoute au nom
 
@@ -36,15 +36,16 @@ while True:
         # On choisit si la stat est relative (%) ou flat
         statMagn = round(randint(3, 10) * quality.multiplier *  stat.modifier * obj.statMod + randint(-4, 6))
         if (stat.type == "Dual" and randint(0, 1)) or stat.type in ("Relative", "FixedRelative"): statMagn, relative = statMagn * 2, True
-        if "Fixed" in stat.type: statMagn = stat.modifier # Et si sa valeur est fixe
+        if stat.type in ("FixedRelative", "FixedFlat"): statMagn = stat.modifier # Et si sa valeur est fixe
         # On rajoute la stat au message
         if statMagn != 0: item += "\n " + ("+" if statMagn > 0 else "-") + str(abs(statMagn)) + ("%" if relative else "") + " " + stat.name
 
     qualMul = -6 if quality.name == "Démoniaque" else quality.multiplier # On gère le cas spécial de la qualité "Démoniaque"
+    statsToAdd = sample(stats, k=quality.totalStats)
     for i in range(quality.totalStats): # On calcule toutes les autres stats
-        stat, relative = choice(stats), False
+        stat, relative = statsToAdd[i], False
         # On choisit si la stat est relative (%) ou flat
-        statMagn = round(randint(3, 10) * qualMul * stat.modifier + randint(-2, 3))
+        statMagn = round(randint(3, 10) * qualMul * stat.modifier + randint(-4, 6))
         if (stat.type == "Dual" and randint(0, 1)) or stat.type == "Relative": statMagn, relative = statMagn * 2, True
         # On rajoute la stat au message
         if statMagn != 0: item += "\n " + ("+" if statMagn > 0 else "-") + str(abs(statMagn)) + ("%" if relative else "") + " " + stat.name
