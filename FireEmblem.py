@@ -2,10 +2,11 @@ from typing import Any, Dict, List, Tuple, Union
 import tkinter as tk
 
 class Terrain:
-    def __init__(self, name: str, ID: str, color: str) -> None:
+    def __init__(self, name: str, ID: str, color: str, description: str) -> None:
         self.name = name
         self.color = color
         self.id = ID
+        self.description = description
 
         TerrainList[self.id] = self
 class Grid:
@@ -31,14 +32,14 @@ class GridLabel(tk.Label):
         self.bind("<Enter>", self.displayDescription)
 
     def displayDescription(self, _: Any) -> None:
-        "a"
+        descriptionText["text"] = newGrid[self.x, self.y].name + 2 * "\n" + newGrid[self.x, self.y].description + "\n" + 100 * " "
 
 TerrainList: Dict[str, Terrain] = {}
 
-Empty = Terrain("Empty", "empty", "white")
-Woods = Terrain("Woods", "woods", "green")
-River = Terrain("River", "river", "cyan")
-Desert = Terrain("Desert", "desert", "yellow")
+Empty = Terrain("Empty", "empty", "white", "")
+Woods = Terrain("Woods", "woods", "green", "-1 Movement if starting turn here.\n+2 Defense if ending turn here.")
+River = Terrain("River", "river", "cyan", "Passable only by foot, aerian and amphibian units.\nCost 3 Movement for foot units to cross.")
+Desert = Terrain("Desert", "desert", "yellow", "-1 Defense if ending turn here.")
 
 
 gridSize = 9
@@ -112,10 +113,11 @@ def test() -> None:
     newGrid[2, 2] = Woods
     for i in range(gridSize):
         newGrid[6, i] = River
+    for i, j in ((4, 6), (4, 7), (4, 5), (5, 6)):
+        newGrid[i, j] = Desert
     
     update()
 
 # Start the window
-update()
 test()
 main.mainloop()
