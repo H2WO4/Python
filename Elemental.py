@@ -33,9 +33,6 @@ class Group:
             if i.revealed:
                 return True
         return False
-
-
-
 class Element:
     """
     The Element object is used to represent a singular element\n
@@ -92,8 +89,6 @@ class Element:
     def initialize(self) -> None:
         """ Initialize the recipes list of the object """
         self.recipes = eval(self.recipes)
-
-
 
 # Defining lists to allow indexing of all elements/groups
 Elements = {}
@@ -289,7 +284,7 @@ def actualizeGroups() -> None:
 # Define a function to handle selecting an element
 element1 = 0
 element2 = 0
-def selectElement1(selection1) -> None:
+def selectElement1(selection1: Tuple[int, ...]) -> None:
     global element1, element2, group1, group2
     elementGroup1 = [i for i in group1.elements if i.revealed]
     element1 = elementGroup1[selection1[0]]
@@ -301,7 +296,7 @@ def selectElement1(selection1) -> None:
         spacesToAdd2 = max([len(i) for i in Elements]) + 1
         fusionPreview["text"] = " " * spacesToAdd1 + "{} + ".format(element1.name) + " " * spacesToAdd2
 
-def selectElement2(selection2) -> None:
+def selectElement2(selection2: Tuple[int, ...]) -> None:
     global element1, element2, group1, group2
     elementGroup2 = [i for i in group2.elements if i.revealed]
     element2 = elementGroup2[selection2[0]]
