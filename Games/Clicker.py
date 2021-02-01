@@ -14,7 +14,6 @@ class Currency:
     def __str__(self) -> str:
         return "{} : {}".format(self.name, int(self.value))
 
-
 class Building:
     def __init__(self, name: str, description: str, priceFormula: Tuple[Callable[[int], float], str], count: int = 0, **formula: Tuple[Union[Callable, str], ...]):
         self.name = name
@@ -23,12 +22,12 @@ class Building:
         self.priceFormula = priceFormula
         self.price = int(priceFormula[0](count))
         self.count = count
-        
+
         buildings[self.name] = self
 
     def __str__(self) -> str:
         return "{} : {}\tCost: {}".format(self.name, self.count, self.price)
-    
+
     def strPrice(self, n: int) -> str:
         return "{} : {}\tCost ({}): {}".format(self.name, self.count, n, self.bulkPrice(n))
 
@@ -39,20 +38,19 @@ class Building:
         requiredPrice = self.bulkPrice(n)
         if eval("{}.value >= {}".format(self.priceFormula[1], requiredPrice)):
             self.count += n
-            
+
             exec("{}.value -= {}".format(self.priceFormula[1], self.price))
             self.price = int(self.priceFormula[0](self.count))
             return True
-        
+
         return False
 
     def bulkPrice(self, n: int) -> int:
         price = 0
         for i in range(n):
             price += int(self.priceFormula[0](self.count+i))
-        
-        return price
 
+        return price
 
 """ Function Definition """
 def passiveLoop() -> None:
@@ -60,7 +58,7 @@ def passiveLoop() -> None:
         for i in buildings:
             for j in buildings[i].produce():
                 exec("{}.value += {}/5".format(j[1], j[0]))
-        
+
         sleep(0.2)
 
 def displayCurrencies() -> None:

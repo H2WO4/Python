@@ -1,7 +1,8 @@
 from random import randint, choice
 from gc import get_referrers
+from typing import Any, Dict, Literal, Set, Union
 
-def damageCalculation(attacker, target, skill):
+def damageCalculation(attacker: Any, target: Any, skill: Any) -> Union[int, Literal["Critical"], Literal["Miss"]]:
 
     if skill.effect == "Physical":
         hitProbability = attacker.physical[2] - target.physical[3]
@@ -35,7 +36,7 @@ def damageCalculation(attacker, target, skill):
 
         return "Miss"
 
-    elif skill.effect == "MP Recover":
+    else:
         hitProbability = attacker.magical[2]
 
         if randint(1, 100) <= hitProbability:
@@ -43,32 +44,60 @@ def damageCalculation(attacker, target, skill):
 
         return "Miss"
 
-def damageFormula(attacker, target, skill):
-
+def damageFormula(attacker: Any, target: Any, skill: Any) -> int:
     if skill.effect == "Physical":
         return round((1 + (randint(-20, 20) / 100)) * (attacker.physical[0] * (100 / (100 + target.physical[1])) * (2 + skill.power / 100)))
 
-    elif skill.effect == "Magical":
+    else:
         return round((1 + (randint(-20, 20) / 100)) * (attacker.physical[0] * (100 / (100 + target.physical[1])) * (2 + skill.power / 100)))
 
+class Item:
+    def __init__(self, name: str, power: int, effect: str, scope: str) -> None:
+        self.name = name
+        self.effect = effect
+        self.power = power
+        self.scope = scope
+        self.number = 0
+
+class Inventory:
+    def __init__(self) -> None:
+        self.items = {}
+
+    def addItem(self, item: Item, number: int) -> None:
+        item.number += number
+        self.items[item.name] = item
+
+    def view(self) -> None:
+        for item in self.items.values():
+            if item.number >= 1:
+                print("{} x{}".format(item.name, item.number))
+
+class Skill:
+    def __init__(self, name: str, power: int, effect: str, mpCost: int, tpCost: int, scope: str) -> None:
+        self.name = name
+        self.effect = effect
+        self.power = power
+        self.mtpCost = [mpCost, tpCost]
+        self.scope = scope
+
+    def __str__(self) -> str:
+        return "\n{}:\n{} Power: {}\nMP Cost: {} TP Cost: {}\nScope: {}\n".format(self.name, self.effect, self.power, self.mtpCost[0], self.mtpCost[1], self.scope)
 
 class Entity:
-
-    def __init__(self, name, maxHP, maxMP, maxTP, pAtk, pDef, mAtk, mDef, pDex, pEva, mMtr, cLuk, cMlt):
+    def __init__(self, name: str, maxHP: int, maxMP: int, maxTP: int, pAtk: int, pDef: int, mAtk: int, mDef: int, pDex: int, pEva: int, mMtr: int, cLuk: int, cMlt: int) -> None:
         self.name = name
         self.maxHMTP = [maxHP, maxMP, maxTP]
         self.HMTP = [maxHP, maxMP, maxTP]
         self.physical = [pAtk, pDef, pDex, pEva]
         self.magical = [mAtk, mDef, mMtr]
         self.critical = [cLuk, cMlt]
-        self.skillList = {}
+        self.skillList: Dict[str, Skill] = {}
         self.alive = True
 
-    def learnSkill(self, skill):
+    def learnSkill(self, skill: Skill) -> None:
         self.skillList[skill.name] = skill
 
-    def useSkillOne(self, skill, target):
-    
+    def useSkillOne(self, skill: str, target: Any) -> None:
         print("")
         if self.skillList[skill].effect == "Physical":
             actualDamage = damageCalculation(self, target, self.skillList[skill])
@@ -117,7 +146,7 @@ class Entity:
         elif self.skillList[skill].effect == "HP Recover":
             actualDamage = damageCalculation(self, target, self.skillList[skill])
 
-            if actualDamage == "Miss":
+            if actualDamage == "Miss" or actualDamage == "Critical":
                 print("The spell failed !")
 
             else:
@@ -129,7 +158,7 @@ class Entity:
         elif self.skillList[skill].effect == "MP Recover":
             actualDamage = damageCalculation(self, target, self.skillList[skill])
 
-            if actualDamage == "Miss":
+            if actualDamage == "Miss" or actualDamage == "Critical":
                 print("The spell failed !")
 
             else:
@@ -141,19 +170,18 @@ class Entity:
         self.HMTP[1] -= self.skillList[skill].mtpCost[0]
         self.HMTP[2] -= self.skillList[skill].mtpCost[1]
 
-    def useSkillAll(self, skill, scope):
-    
+    def useSkillAll(self, skill: str, scope: str) -> None:
         print("")
-        targets = {}
+        targets: Set[Entity] = set()
         if scope == "Ennemies":
             for i in get_referrers(Hero):
                 if i.__class__ is Hero:
-                    targets[i] = i
+                    targets += i
 
         elif scope == "Allies":
             for i in get_referrers(Entity):
                 if i.__class__ is Entity:
-                    targets[i] = i
+                    targets += i
 
         if self.skillList[skill].effect == "Physical":
             for target in targets:
@@ -205,7 +233,7 @@ class Entity:
             for target in targets:
                 actualDamage = damageCalculation(self, target, self.skillList[skill])
 
-                if actualDamage == "Miss":
+                if actualDamage == "Miss" or actualDamage == "Critical":
                     print("The spell failed !")
 
                 else:
@@ -218,7 +246,7 @@ class Entity:
             for target in targets:
                 actualDamage = damageCalculation(self, target, self.skillList[skill])
 
-                if actualDamage == "Miss":
+                if actualDamage == "Miss" or actualDamage == "Critical":
                     print("The spell failed !")
 
                 else:
@@ -230,8 +258,7 @@ class Entity:
         self.HMTP[1] -= self.skillList[skill].mtpCost[0]
         self.HMTP[2] -= self.skillList[skill].mtpCost[1]
 
-    def useSkillSelf(self, skill):
-        
+    def useSkillSelf(self, skill: str) -> None:
         print("")
         if self.skillList[skill].effect == "Physical":
             actualDamage = damageCalculation(self, self, self.skillList[skill])
@@ -242,10 +269,10 @@ class Entity:
             else:
                 critical = False
                 if actualDamage == "Critical":
-                    actualDamage = damageFormula(self, target, self.skillList[skill]) * 3
+                    actualDamage = damageFormula(self, self, self.skillList[skill]) * 3
                     critical = True
                     
-                target.HMTP[0] -= actualDamage
+                self.HMTP[0] -= actualDamage
                 
                 if critical:
                     print("Critical Hit !")
@@ -264,10 +291,10 @@ class Entity:
             else:
                 critical = False
                 if actualDamage == "Critical":
-                    actualDamage = damageFormula(self, target, self.skillList[skill]) * 3
+                    actualDamage = damageFormula(self, self, self.skillList[skill]) * 3
                     critical = True
                     
-                target.HMTP[0] -= actualDamage
+                self.HMTP[0] -= actualDamage
                 
                 if critical:
                     print("Critical Hit !")
@@ -275,54 +302,52 @@ class Entity:
                 print("{} casted {} and dealt {} damage to themself".format(self.name, skill, actualDamage))
                 if self.HMTP[0] <= 0:
                     self.alive = False
-                    print("{} is dead !".format(target.name))
+                    print("{} is dead !".format(self.name))
 
         elif self.skillList[skill].effect == "HP Recover":
             actualDamage = damageCalculation(self, self, self.skillList[skill])
 
-            if actualDamage == "Miss":
+            if actualDamage == "Miss" or actualDamage == "Critical":
                 print("The spell failed !")
 
             else:
                 self.HMTP[0] += actualDamage
-                if target.HMTP[0] > target.maxHMTP[0]:
-                    target.HMTP[0] = target.maxHMTP[0]
+                if self.HMTP[0] > self.maxHMTP[0]:
+                    self.HMTP[0] = self.maxHMTP[0]
                 print("{} casted {} and healed themself {} HP".format(self.name, skill, actualDamage))
 
         elif self.skillList[skill].effect == "MP Recover":
             actualDamage = damageCalculation(self, self, self.skillList[skill])
 
-            if actualDamage == "Miss":
+            if actualDamage == "Miss" or actualDamage == "Critical":
                 print("The spell failed !")
 
             else:
                 self.HMTP[1] += actualDamage
-                if target.HMTP[1] > target.maxHMTP[1]:
-                    target.HMTP[1] = target.maxHMTP[1]
+                if self.HMTP[1] > self.maxHMTP[1]:
+                    self.HMTP[1] = self.maxHMTP[1]
                 print("{} casted {} and recovered themself {} MP".format(self.name, skill, actualDamage))
 
         self.HMTP[1] -= self.skillList[skill].mtpCost[0]
         self.HMTP[2] -= self.skillList[skill].mtpCost[1]
 
-    def __str__(self):
+    def __str__(self) -> str:
         hpPC = round(self.HMTP[0] / self.maxHMTP[0] * 100)
         return "\n{}:\nHP: {}%".format(self.name, hpPC)
 
 class Hero(Entity):
-
-    def useSkillAll(self, skill, scope):
-        
+    def useSkillAll(self, skill: str, scope: str) -> None:
         print("")
-        targets = {}
+        targets: Set[Entity] = set()
         if scope == "Allies":
             for i in get_referrers(Hero):
                 if i.__class__ is Hero:
-                    targets[i] = i
+                    targets += i
 
         elif scope == "Ennemies":
             for i in get_referrers(Entity):
                 if i.__class__ is Entity:
-                    targets[i] = i
+                    targets += i
 
         if self.skillList[skill].effect == "Physical":
             for target in targets:
@@ -374,7 +399,7 @@ class Hero(Entity):
             for target in targets:
                 actualDamage = damageCalculation(self, target, self.skillList[skill])
 
-                if actualDamage == "Miss":
+                if actualDamage == "Miss" or actualDamage == "Critical":
                     print("The spell failed !")
 
                 else:
@@ -387,7 +412,7 @@ class Hero(Entity):
             for target in targets:
                 actualDamage = damageCalculation(self, target, self.skillList[skill])
 
-                if actualDamage == "Miss":
+                if actualDamage == "Miss" or actualDamage == "Critical":
                     print("The spell failed !")
 
                 else:
@@ -399,50 +424,12 @@ class Hero(Entity):
         self.HMTP[1] -= self.skillList[skill].mtpCost[0]
         self.HMTP[2] -= self.skillList[skill].mtpCost[1]
 
-    def useItem(self, item, target):
+    def useItem(self, item: Item, target: str) -> None:
         pass
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "\n{}:\nHP: {}/{} MP: {}/{} TP: {}/{}\nAtk: {} Def: {}\nDex: {}% Eva: {}%\nMat: {} Mdf: {}\nMastery: {}%\nCritical Chance: {}%\nCritical Multiplier: x{}".format(self.name, self.HMTP[0], self.maxHMTP[0], self.HMTP[1], self.maxHMTP[1], self.HMTP[2], self.maxHMTP[2], self.physical[0], self.physical[1], self.physical[2], self.physical[3], self.magical[0], self.magical[1], self.magical[2], self.critical[0], self.critical[1])
 
-class Skill:
-
-    def __init__(self, name, power, effect, mpCost, tpCost, scope):
-
-        self.name = name
-        self.effect = effect
-        self.power = power
-        self.mtpCost = [mpCost, tpCost]
-        self.scope = scope
-
-    def __str__(self):
-
-        return "\n{}:\n{} Power: {}\nMP Cost: {} TP Cost: {}\nScope: {}\n".format(self.name, self.effect, self.power, self.mtpCost[0], self.mtpCost[1], self.scope)
-
-class Inventory:
-
-    def __init__(self):
-        self.items = {}
-
-    def addItem(self, item, number):
-        item.number += number
-        self.items[item.name] = item
-
-    def view(self):
-        for item in self.items.values():
-            if item.number >= 1:
-                print("{} x{}".format(item.name, item.number))
-
-class Item:
-
-    def __init__(self, name, power, effect, scope):
-        self.name = name
-        self.effect = effect
-        self.power = power
-        self.scope = scope
-        self.number = 0
-
-    
 
 link = Hero("Link", 100, 30, 80, 18, 10, 10, 8, 95, 5, 85, 10, 2)
 zelda = Hero("Zelda", 80, 100, 20, 10, 15, 12, 15, 85, 10, 100, 5, 3)

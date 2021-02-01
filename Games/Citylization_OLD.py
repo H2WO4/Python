@@ -173,7 +173,7 @@ class City:
                 x += 1
             x = 0
             y += 1
-        print(City)
+        print(city)
         ressourceCheck()
         return None
 
@@ -190,7 +190,7 @@ Empty = Building("Empty Land", "-", "Free terrain suitable for construction.")
 River = Building("River", "≈", "A flowing body of water, provide water to adjacent tiles.")
 Woods = Building("Woods", "W", "A small patch of tree, boosting both the attractiveness of nearby tiles and helping providing ressources")
 
-Center = Building("City Center", "*", "The center of the town, providing bonus to most neighbouring buildings.")
+Center = Building("city Center", "*", "The center of the town, providing bonus to most neighbouring buildings.")
 Farm = Building("Farm", "F", "A simple farm. Produce more if provided with water.")
 Woodcutter = Building("Woodcutter's Cabin", "C", "A small hut for a woodcutter. Produces wood only if adjacent to Woods tile.")
 
@@ -208,9 +208,9 @@ if nature == "y":
 else:
     nature = False
 
-City = City(name, int(size), nature)
+city = City(name, int(size), nature)
 
-print(City)
+print(city)
 ressourceCheck()
 
 
@@ -222,25 +222,25 @@ while not quit:
 
     if command == "look":
         command = eval(input("Which tile ? [x, y] "))
-        print(City.look(int(command[0]) - 1, int(command[1]) - 1))
+        print(city.look(int(command[0]) - 1, int(command[1]) - 1))
     
     if command == "check":
-        print(City)
+        print(city)
         ressourceCheck()
     
     if command == "build":
         building = input("What do you want to build ? ")
         command = eval(input("Where do you want to build it ? [x, y] "))
-        City.build(int(command[0]) - 1, int(command[1]) - 1, building)
-        City.turnEnd()
+        city.build(int(command[0]) - 1, int(command[1]) - 1, building)
+        city.turnEnd()
 
     if command == "destroy":
         command = eval(input("Where do you want to destroy a building ? [x, y] "))
-        City.destroy(int(command[0]) - 1, int(command[1]) - 1)
-        City.turnEnd()
+        city.destroy(int(command[0]) - 1, int(command[1]) - 1)
+        city.turnEnd()
 
     if command == "wait":
-        City.turnEnd()
+        city.turnEnd()
     
     if command == "quit":
         quit = True

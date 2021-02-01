@@ -1,7 +1,7 @@
 """ Importing Ressources """
 
 import tkinter as tk
-from typing import Any, Tuple, cast
+from typing import Any, Dict, Tuple, cast
 
 
 
@@ -91,10 +91,10 @@ class Element:
         self.recipes = eval(self.recipes)
 
 # Defining lists to allow indexing of all elements/groups
-Elements = {}
-ElementsCreated = {}
-ElementsNotCreated = {}
-Groups = {}
+Elements: Dict[str, Element] = {}
+ElementsCreated: Dict[str, Element] = {}
+ElementsNotCreated: Dict[str, Element] = {}
+Groups: Dict[str, Group] = {}
 
 
 
