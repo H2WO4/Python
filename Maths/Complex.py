@@ -86,7 +86,7 @@ class Complex:
         elif isinstance(other, int) or isinstance(other, float):
             return self*(1/other)
     
-    def __rtruediv__(self, other: float) -> Any:
+    def __rdiv__(self, other: float) -> Any:
         if isinstance(other, int) or isinstance(other, float):
             return Complex(other, 0)/self
     

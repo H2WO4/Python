@@ -192,11 +192,8 @@ class City:
     def __getitem__(self, key: Tuple[int, int]) -> Building:
         return self.grid[key[0]][key[1]]
     
-    def __setitem__(self, key: Union[int, Tuple[int, int]], other) -> None:
-        if isinstance(key, int):
-            self.grid[key] = other
-        else:
-            self.grid[key[0]][key[1]] = other
+    def __setitem__(self, key: Tuple[int, int], other) -> None:
+        self.grid[key[0]][key[1]] = other
     
     def endTurn(self) -> None:
         for i in range(len(self.grid)):

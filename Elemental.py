@@ -1,7 +1,7 @@
 """ Importing Ressources """
 
 import tkinter as tk
-from typing import Any, Tuple
+from typing import Any, Tuple, cast
 
 
 
@@ -261,23 +261,23 @@ group2 = list(Groups)[0]
 def selectGroup1(selection: Tuple[int, ...]) -> None:
     global group1
     group1 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
-    listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed]))
+    listboxElements1 = tk.StringVar(value=cast(str, list([i for i in group1.elements if i.revealed])))
     listElements1["listvariable"] = listboxElements1
 
 def selectGroup2(selection: Tuple[int, ...]) -> None:
     global group2
     group2 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
-    listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed]))
+    listboxElements2 = tk.StringVar(value=cast(str, list([i for i in group2.elements if i.revealed])))
     listElements2["listvariable"] = listboxElements2
 
 
 def actualizeGroups() -> None:
     global group1, group2
-    listGroups1["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
-    listGroups2["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
-    listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed]))
+    listGroups1["listvariable"] = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
+    listGroups2["listvariable"] = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
+    listboxElements1 = tk.StringVar(value=cast(str, list([i for i in group1.elements if i.revealed])))
     listElements1["listvariable"] = listboxElements1
-    listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed]))
+    listboxElements2 = tk.StringVar(value=cast(str, list([i for i in group2.elements if i.revealed])))
     listElements2["listvariable"] = listboxElements2
 
 
@@ -310,12 +310,12 @@ def selectElement2(selection2: Tuple[int, ...]) -> None:
 
 
 # Define the two groups selection lists
-listboxGroups1 = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
+listboxGroups1 = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
 listGroups1 = tk.Listbox(listvariable=listboxGroups1)
 listGroups1.grid(row=0, column=0, sticky="news")
 listGroups1.bind("<Double-1>", lambda e: selectGroup1(listGroups1.curselection()))
 
-listboxGroups2 = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()]))
+listboxGroups2 = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
 listGroups2 = tk.Listbox(listvariable=listboxGroups2)
 listGroups2.grid(row=0, column=4, sticky="news")
 listGroups2.bind("<Double-1>", lambda e: selectGroup2(listGroups2.curselection()))
@@ -385,7 +385,6 @@ fusionButton.pack()
 
 
 # Handle the row and column rescaling
-rowWeights = [1, 2]
 [main.columnconfigure(i, weight=1) for i in range(5)]
 main.rowconfigure(0, weight=1)
 
