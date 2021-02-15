@@ -1,6 +1,6 @@
 import tkinter as tk
 import os, json, glob
-from typing import Any, Dict, List, Set, Tuple, Union
+from typing import Any, Dict, List, Set, Tuple
 
 def neighbors(x: int, y: int) -> Tuple[Any, ...]:
     output = []
@@ -283,7 +283,7 @@ for filename in glob.glob(os.path.join(os.getcwd() + path, "*.png")):
 console = tk.Frame(borderwidth=3, relief="sunken", background="white")
 console.grid(row=citySize+1, column=0, columnspan=citySize, sticky="news")
 
-logText = ["Welcome to Citylization!", " " * 80, "", ""]
+logText = ["Welcome to Citylization!", "", "", ""]
 consoleText = tk.Label(master=console, text="\n".join(logText[-4:-1] + [logText[-1]]), background="white")
 consoleText.pack()
 
