@@ -3,22 +3,38 @@ from typing import Any, List, Tuple
 class Node:
     def __init__(self, value: int):
         self.value: int = value
-        self.pathsTo: List[Tuple[Node, int]] = []
-        self.pathsFrom: List[Tuple[Node, int]] = []
     
-    def connect(self, other: Any, cost: int):
-        self.pathsTo.append((other, cost))
-        self.pathsFrom.append((other, cost))
-    
-    def link(self, other: Any, cost: int):
-        self.pathsTo.append((other, cost))
+    def __str__(self) -> str:
+        return str(self.value)
 
 class Graph:
-    def __init__(self, *nodes: Node):
-        self.nodes = [*nodes]
+    def __init__(self, size: int):
+        self.nodes: List[Node] = []
+        for i in range(size):
+            self.nodes.append(Node(i))
+
+        self.relations: List[Tuple[Node, Node]] = []    
+    
+    def connect(self, other1: Node, other2: Node) -> None:
+        if other1 == other2:
+            return
+        
+        if (other1, other2) not in self.relations:
+            self.relations.append((other1, other2))
+        if (other2, other1) not in self.relations:
+            self.relations.append((other2, other1))
+    
+    def is_linked(self, other1, other2) -> bool:
+        return (other1, other2) in self.relations
 
 
-test = Graph(*[Node(i) for i in range(5)])
+test = Graph(5)
 
-for i in test.nodes:
-    print(i)
+for i in range(5):
+    for j in range(3):
+        test.connect(test.nodes[i], test.nodes[j])
+
+test.relations.sort(key=lambda a: a[0].value)
+
+for i in test.relations:
+    print("({}, {})".format(i[0], i[1]))
