@@ -2,7 +2,10 @@ import tkinter as tk
 import os, json, glob
 from typing import Any, Dict, List, Set, Tuple
 
-def neighbors(x: int, y: int) -> Tuple[Any, ...]:
+class Building:
+    pass
+
+def neighbors(x: int, y: int) -> Tuple[Building, ...]:
     output = []
     for a, b in [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if (abs(a) + abs(b) > 0)]:
         try:
@@ -10,7 +13,7 @@ def neighbors(x: int, y: int) -> Tuple[Any, ...]:
         except:
             pass
     return tuple(output)
-def neighbors_2(x: int, y: int) -> Tuple[Any, ...]:
+def neighbors_2(x: int, y: int) -> Tuple[Building, ...]:
     output = []
     for a, b in [(a, b) for a in [-2, -1, 0, 1, 2] for b in [-2, -1, 0, 1, 2] if (abs(a) + abs(b) > 0)]:
         try:
@@ -18,7 +21,7 @@ def neighbors_2(x: int, y: int) -> Tuple[Any, ...]:
         except:
             pass
     return tuple(output)
-def direct_neighbors(x: int, y: int) -> Tuple[Any, ...]:
+def direct_neighbors(x: int, y: int) -> Tuple[Building, ...]:
     output = []
     for a, b in [(a, b) for a in [-1, 0, 1] for b in [-1, 0, 1] if (abs(a) + abs(b) == 1)]:
         try:
@@ -26,7 +29,7 @@ def direct_neighbors(x: int, y: int) -> Tuple[Any, ...]:
         except:
             pass
     return tuple(output)
-def direct_neighbors_2(x: int, y: int) -> Tuple[Any, ...]:
+def direct_neighbors_2(x: int, y: int) -> Tuple[Building, ...]:
     output = []
     for a, b in [(a, b) for a in [-2, -1, 0, 1, 2] for b in [-2, -1, 0, 1, 2] if (abs(a) + abs(b) in [1, 2])]:
         try:

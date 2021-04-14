@@ -1,18 +1,7 @@
 from math import sqrt
 from random import randint
+from typing import List
 
-
-"""
-def Y(k):
-    if k == 0:
-        return A
-    return 0.5*(Y(k-1) + (1/Z(k-1)))
-
-def Z(k):
-    if k == 0:
-        return k
-    return 0.5*(Z(k-1) + (1/Y(k-1)))
-"""
 
 class DimensionError(Exception):
     def __init__(self, message):
@@ -20,11 +9,11 @@ class DimensionError(Exception):
 
 
 class Matrix:
-    def __init__(self, value):
+    def __init__(self, value: List[List[float]]) -> None:
         self.value = value
         self.lines = len(value)
 
-        columnsArray = []
+        columnsArray: List[int] = []
         for i in range(self.lines):
             columnsArray.append(len(value[i]))
         
@@ -190,14 +179,17 @@ class SquareMatrix(Matrix):
             if columnsArray[i] != columnsArray[i-1]:
                 raise DimensionError("Matrix is irregular hence cannot exist")
         self.columns = columnsArray[0]
+
         if self.lines != self.columns:
             raise DimensionError("Square matrix has different number of lines and columns")
+        
         det1, det2 = self.value[0][0], self.value[self.lines-1][0]
         for i in range(self.lines):
             if i != 0:
                 det1 *= self.value[i][i]
                 det2 *= self.value[self.lines-i-1][i]
         self.determinant = det1 - det2
+
         output = 0
         for i in range (self.lines):
             output += self.value[i][i]
@@ -210,6 +202,7 @@ class SquareMatrix(Matrix):
             output.value[1][0] = -output.value[1][0]
             output *= 1/self.determinant
             return Matrix(output.value)
+
         if self.lines == 3:
             cofactor = []
             for i in range(3):
@@ -227,6 +220,9 @@ class SquareMatrix(Matrix):
             cofactor[2][2] = self.value[0][0] * self.value[1][1] - self.value[0][1] * self.value[1][0]
             cofactor = Matrix(cofactor)
             return Matrix((cofactor * (1/self.determinant)).value)
+
+        else:
+            return NotImplemented
     
     def __truediv__(self, other):
         if isinstance(other, int) or isinstance(other, float):
