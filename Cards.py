@@ -21,6 +21,7 @@ class Card:
 
 
 class Modifier:
+    
     def __init__(self, name: str, priority: Tuple[int, int, int], varsModif: Dict[str, Tuple[str, int]], cost: int = 0, use: Union[str, List[str]] = "", can_use: Union[str, List[str]] = "") -> None:
         self.name = name
         self.priority = priority
@@ -87,19 +88,20 @@ def create_card(name: str, *modifiers: Modifier) -> Card:
 
 basicDamage = Modifier("Basic Damage", (0, 50, 100), {"atk": ("plus", 9)}, 1, "print(\"Deal {} damage\".format(card.vars['atk']))")
 doubleDamage = Modifier("Double Damage", (0, 50, 100), {"atk": ("plus", 4)}, 1, ["print(\"Deal {} damage\".format(card.vars['atk']))", "print(\"Deal {} damage\".format(card.vars['atk']))"])
+basicBlock = Modifier("Basic Block", (0, 50, 100), {"def": ("plus", 7)}, 1, "print(\"Gaind {} block\".format(card.vars['def']))")
 damageMultiplexer = Modifier("Damage Muliplexer", (5, 100, 100), {"atk": ("times", 2)}, 1)
-costDown = Modifier("Cost Down", (51, 100, 100), {"atk": ("times", 0.7)}, -1)
+costDown = Modifier("Cost Down", (51, 100, 100), {"atk": ("times", 0.7), "def": ("times", 0.7)}, -1)
 drawOne = Modifier("Draw One", (50, 51, 100), {"atk": ("times", 0.85), "draw": ("plus", 1)})
 drawOneE = Modifier("Draw One", (50, 51, 100), {"draw": ("plus", 1)}, 1)
 drawTwo = Modifier("Draw Two", (50, 51, 100), {"atk": ("times", 0.75), "draw": ("plus", 2)})
 
 
-A = create_card("Test", basicDamage, damageMultiplexer, drawOne, costDown)
+A = create_card("Test", basicBlock, drawOne, costDown)
 if A.can_use(0, 0):
     A.use(0, 0)
 
 print()
 
-B = create_card("Test", doubleDamage, damageMultiplexer, drawOneE)
+B = create_card("Test", doubleDamage, damageMultiplexer)
 if B.can_use(0, 0):
     B.use(0, 0)
