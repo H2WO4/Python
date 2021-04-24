@@ -1,7 +1,5 @@
-from typing import Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 from random import choices, gauss, uniform
-
-normal = lambda x, y: min(max(gauss((x+y)/2, ((y-x)/2) * 0.95), x), y)
 
 
 class Item:
@@ -34,7 +32,7 @@ class Inventory:
     
     def add(self, other) -> None:
         if not isinstance(other, Item):
-            return TypeError
+            raise TypeError
 
         for i in self.content:
             if i == other:
@@ -46,9 +44,10 @@ class Inventory:
     def __str__(self) -> str:
         return "{}:\n".format(self.name) + "\n".join([str(i) for i in self.content])
 
+
 class PoolGen:
 
-    def __init__(self, content: Dict[str, Tuple[int, int]], method: Callable[[float, float], float]) -> None:
+    def __init__(self, content: Dict[str, Tuple[int, ...]], method: Callable[..., float]) -> None:
         self.content = content
         self.method = method
     
@@ -56,7 +55,7 @@ class PoolGen:
         return [Item(i, round(self.method(*self.content[i]))) for i in choices([j for j in self.content], k=times)]
 
 
-def equiPool(items: List[str], distribution: Tuple[int, int], method: Callable[[float, float], float]) -> PoolGen:
+def equiPool(items: List[str], distribution: Tuple[int, ...], method: Callable[..., float]) -> PoolGen:
     content = {}
     for i in items:
         content[i] = distribution
@@ -68,10 +67,8 @@ def equiPool(items: List[str], distribution: Tuple[int, int], method: Callable[[
 
 A = Inventory("Bag")
 
-Fruits = equiPool(["Apple", "Orange"], (1, 9), normal)
-for i in Fruits.roll(10):
-    print(i)
+Fruits = equiPool(["Apple", "Orange", "Banana", "Pineapple"], (2, 5), uniform)
+for i in Fruits.roll(100):
     A.add(i)
 
-print()
 print(A)
