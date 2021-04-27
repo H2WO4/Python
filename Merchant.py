@@ -1,5 +1,15 @@
-from typing import Any, Callable, Dict, List, Tuple
-from random import choices, gauss, uniform
+# Import
+from typing import Callable
+from random import choices, gauss, randint
+
+
+# Normal distribution within bounds with automatic sigma
+def normal(lowBound: float, highBound: float, mu: float, sigma: float) -> int:
+    x = round(gauss(mu, (highBound - lowBound) / sigma))
+    if lowBound <= x and x <= highBound:
+        return x
+    return normal(mu, sigma, lowBound, highBound)
+
 
 
 class Item:
@@ -7,68 +17,58 @@ class Item:
     def __init__(self, name: str, amount: int = 1) -> None:
         self.name = name
         self.amount = amount
-    
-    def __eq__(self, other):
-        if not isinstance(other, Item):
-            return TypeError
 
-        return self.name == other.name
+    def __eq__(self, other: Item): return self.name == other.name
 
-    def __lt__(self, other):
-        if not isinstance(other, Item):
-            return TypeError
-
-        return self.name < other.name
-
-    def __str__(self) -> str:
-        return "{} ×{}".format(self.name, self.amount)
+    def __str__(self) -> str: return "{} ×{}".format(self.name, self.amount)
 
 
 class Inventory:
 
     def __init__(self, name: str) -> None:
         self.name = name
-        self.content: List[Item] = []
+        self.content: list[Item] = []
     
-    def add(self, other) -> None:
-        if not isinstance(other, Item):
-            raise TypeError
+    def add(self, *other: Item) -> None:
+        for i in other:
+            for j in self.content:
+                if j == i:
+                    j.amount += i.amount
+                    break
+            else:
+                self.content.append(i)
+    
+    def __str__(self) -> str: return "{}:\n".format(self.name) + "\n".join([str(i) for i in self.content])
 
-        for i in self.content:
-            if i == other:
-                i.amount += other.amount
-                break
-        else:
-            self.content.append(other)
-    
-    def __str__(self) -> str:
-        return "{}:\n".format(self.name) + "\n".join([str(i) for i in self.content])
+    def sort(self) -> None: self.content.sort(key=str)
+
+    def move(self, other: Inventory, item, amount: int = 1) -> None:
+        pass
 
 
 class PoolGen:
 
-    def __init__(self, content: Dict[str, Tuple[int, ...]], method: Callable[..., float]) -> None:
-        self.content = content
+    def __init__(self, results: dict[str, tuple[float, ...]], method: Callable[..., int]) -> None:
+        self.results = results
         self.method = method
     
-    def roll(self, times: int = 1) -> List[Item]:
-        return [Item(i, round(self.method(*self.content[i]))) for i in choices([j for j in self.content], k=times)]
+    def roll(self, times: int = 1) -> list[Item]:
+        return [Item(i, self.method(*self.results[i])) for i in choices([j for j in self.results], k=times)]
 
 
-def equiPool(items: List[str], distribution: Tuple[int, ...], method: Callable[..., float]) -> PoolGen:
-    content = {}
+def equiPool(items: list[str], distribution: tuple[float, ...], method: Callable[..., int]) -> PoolGen:
+    results = {}
     for i in items:
-        content[i] = distribution
-    return PoolGen(content, method)
-
+        results[i] = distribution
+    return PoolGen(results, method)
 
 
 
 
 A = Inventory("Bag")
 
-Fruits = equiPool(["Apple", "Orange", "Banana", "Pineapple"], (2, 5), uniform)
-for i in Fruits.roll(100):
-    A.add(i)
+Fruits = equiPool(["Apple", "Orange", "Banana", "Rawsbery", "Citrus"], (2, 5, 3, 3), normal)
+A.add(*Fruits.roll(100))
+A.sort()
 
 print(A)
