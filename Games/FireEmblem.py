@@ -1,5 +1,6 @@
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple
 import tkinter as tk
+
 
 class Terrain:
     def __init__(self, name: str, ID: str, color: str, description: str) -> None:
@@ -9,22 +10,18 @@ class Terrain:
         self.description = description
 
         TerrainList[self.id] = self
+
 class Grid:
     def __init__(self, name: str, size: int) -> None:
         self.name = name
         self.size = size * 2 + 1
-        self.grid: List[List[Terrain]] = [[TerrainList["empty"] for j in range(size * 2 + 1)] for i in range(size * 2 + 1)]
+        self.grid: List[List[Terrain]] = [[TerrainList["empty"] for _ in range(size * 2 + 1)] for _ in range(size * 2 + 1)]
     
-    def __getitem__(self, key: Tuple[int, int]) -> Terrain:
-        return self.grid[key[0]][key[1]]
-    
-    def __setitem__(self, key: Union[int, Tuple[int, int]], other) -> None:
-        if isinstance(key, int):
-            self.grid[key] = other
-        else:
-            self.grid[key[0]][key[1]] = other
-class GridLabel(tk.Label):
+    def __getitem__(self, key: Tuple[int, int]) -> Terrain: return self.grid[key[0]][key[1]]
 
+    def __setitem__(self, key: Tuple[int, int], other: Terrain) -> None: self.grid[key[0]][key[1]] = other
+
+class GridLabel(tk.Label):
     def __init__(self, x: int, y: int, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.x = x
@@ -102,10 +99,10 @@ endTurnButton.pack()
 
 
 # Setup windows resizing
-[main.columnconfigure(i, weight=1) for i in range(gridSize)]
-main.columnconfigure(gridSize+1, weight=4)
-[main.rowconfigure(i, weight=1) for i in range(gridSize)]
-main.rowconfigure(gridSize+1, weight=4)
+[main.columnconfigure(i, weight=1) for i in range(gridSize)] # type: ignore
+main.columnconfigure(gridSize+1, weight=4) # type: ignore
+[main.rowconfigure(i, weight=1) for i in range(gridSize)] # type: ignore
+main.rowconfigure(gridSize+1, weight=4) # type: ignore
 
 
 # Tests

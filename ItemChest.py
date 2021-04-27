@@ -1,5 +1,4 @@
 from random import choice, randint, sample
-from typing import Union
 from item_chest.ItemChestData import Attribute, Material, Type, stats, materials, types, attributes, qualities
 
 print("Dans le coffre se trouve ...\n")
@@ -27,7 +26,7 @@ while True:
 
     # On calcule les 3 premières stats
     for i in range(3):
-        obj: Union[Type, Material, Attribute] = [iType, iMat, iAttr][i] # On prend l'objet, et setup relative
+        obj: Type | Material | Attribute = [iType, iMat, iAttr][i] # On prend l'objet, et setup relative
         stat, relative = obj.stat, False
         # Gestion des cas "Copy", "Random" et "Null"
         if stat.name == "Copy": stat = iType.stat

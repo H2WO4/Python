@@ -1,17 +1,18 @@
-from typing import Any, List, Tuple
+from typing import Any, Generic, List, Tuple, TypeVar
 
+T = TypeVar("T")
 
-class ObjectList:
-    def __init__(self, data: List[Any] = []) -> None:
+class ObjectList(Generic[T]):
+    def __init__(self, data: List[T] = []) -> None:
         self.data = data
 
     def __len__(self) -> int:
         return len(self.data)
 
 
-class Stack(ObjectList):
-    def push(self, *values: Any) -> None:
-        self.data = list(values) + self.data
+class Stack(ObjectList[T]):
+    def push(self, *values: T) -> None:
+        self.data: List[T] = list(values) + self.data
     
     def pull(self, amount: int=1) -> Tuple[Any, ...]:
         out = self.data[:amount]
@@ -28,9 +29,9 @@ class Stack(ObjectList):
         return "|".join([str(i) for i in reversed(self.data)]) + " <->"
 
 
-class Queue(ObjectList):
+class Queue(ObjectList[T]):
     def push(self, *values: Any) -> None:
-        self.data = self.data + list(reversed(values))
+        self.data: List[T] = self.data + list(reversed(values))
     
     def pull(self, amount: int=1) -> Tuple[Any, ...]:
         out = self.data[-amount:]
@@ -47,7 +48,7 @@ class Queue(ObjectList):
         return "-> " + "|".join([str(i) for i in self.data]) + " ->"
 
 
-p = Stack()
+p = Stack[int]()
 p.push(*range(10))
 print(p)
 print(*p.pull(3))

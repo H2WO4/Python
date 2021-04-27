@@ -1,16 +1,19 @@
+from typing import Callable, List
+
+
 class Actor:
-    def __init__(self, name, **stats):
+    def __init__(self, name: str, **stats: int) -> None:
         self.name = name
         self.stats = stats
 
 
 class Hero(Actor):
-    def __init__(self, name, **stats):
+    def __init__(self, name: str, **stats: int) -> None:
         Actor.__init__(self, name, **stats)
 
         Heroes.append(self)
     
-    def __str__(self):
+    def __str__(self) -> str:
         output = "{}:\n".format(self.name)
         for i in self.stats:
             output += "{}: {}\n".format(eval(i), self.stats[i])
@@ -19,7 +22,7 @@ class Hero(Actor):
 
 
 class Stat:
-    def __init__(self, name):
+    def __init__(self, name: str) -> None:
         self.name = name
 
     def __str__(self):
@@ -27,12 +30,12 @@ class Stat:
 
 
 class Skill:
-    def __init__(self, name, effect):
+    def __init__(self, name: str, effect: Callable[[int], int]) -> None:
         self.name = name
         self.effect = effect
 
 
-Heroes = []
+Heroes: List[Hero] = []
 
 mhp = Stat("Max HP")
 mmp = Stat("Max MP")

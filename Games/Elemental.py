@@ -1,7 +1,7 @@
 """ Importing Ressources """
 
 import tkinter as tk
-from typing import Any, Dict, Tuple, cast
+from typing import Dict, List, Tuple
 
 
 
@@ -17,7 +17,7 @@ class Group:
         """ Initialize a Group object """
         # Init - Setting attributes
         self.name = name
-        self.elements = []
+        self.elements: List[Element] = []
 
         # Init - Adding itself to lists for future indexing
         Groups[self.name] = self
@@ -33,6 +33,9 @@ class Group:
             if i.revealed:
                 return True
         return False
+
+    def sort(self) -> None: self.elements.sort(key=str) 
+
 class Element:
     """
     The Element object is used to represent a singular element\n
@@ -40,7 +43,7 @@ class Element:
     its state and the list of its recipes
     """
 
-    def __init__(self, name: str, recipes: str, group: Group = None, revealed: bool = False) -> None:
+    def __init__(self, name: str, recipes: str, group: Group | None, revealed: bool = False) -> None:
         """ Initialize an Element object """
         # Init - Setting attributes
         self.name = name
@@ -50,7 +53,7 @@ class Element:
 
         # Init - Adding itself to lists for future indexing
         Elements[self.name] = self
-        if group is not None:
+        if group:
             group.elements.append(self)
 
         if revealed:
@@ -63,18 +66,6 @@ class Element:
         """ Return the name value of the object """
         # Overload the 'str()' operator to return the element's name
         return self.name
-
-
-    def __lt__(self, other: Any) -> bool:
-        """ Compare two Element object, using their name values """
-        # Overload of the '<' operator to allow list sorting
-        if type(other) != Element:
-            return NotImplemented
-
-        # Compare their name values and return a boolean
-        if self.name < other.name:
-            return True
-        return False
 
 
     def reveal(self) -> None:
@@ -111,6 +102,8 @@ Vitae = Group("Vitae")
 Locus = Group("Locus")
 
 
+
+Blank = Element("", "{}", None)
 # Base Elements
 Fire = Element("Fire", "{}", Primus, True)
 Air = Element("Air", "{}", Primus, True)
@@ -198,7 +191,7 @@ Universe = Element("Universe", "{LocalGroup, LocalGroup}", Locus)
 # Sorts all of the groups' elements list, as a cleanup
 Groups = {i: Groups[i] for i in sorted(Groups.keys())}
 for i in Groups:
-    Groups[i].elements.sort()
+    Groups[i].sort()
 
 
 # Initialize all of the elements' recipes
@@ -256,79 +249,72 @@ consoleText.pack()
 
 
 # Define three functions to handle selecting a group
-group1 = list(Groups)[0]
-group2 = list(Groups)[0]
+group1: Group
+group2: Group
 def selectGroup1(selection: Tuple[int, ...]) -> None:
     global group1
     group1 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
-    listboxElements1 = tk.StringVar(value=cast(str, list([i for i in group1.elements if i.revealed])))
+    listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed])) # type: ignore
     listElements1["listvariable"] = listboxElements1
 
 def selectGroup2(selection: Tuple[int, ...]) -> None:
     global group2
     group2 = list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])[selection[0]]
-    listboxElements2 = tk.StringVar(value=cast(str, list([i for i in group2.elements if i.revealed])))
+    listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed])) # type: ignore
     listElements2["listvariable"] = listboxElements2
 
 
 def actualizeGroups() -> None:
     global group1, group2
-    listGroups1["listvariable"] = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
-    listGroups2["listvariable"] = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
-    listboxElements1 = tk.StringVar(value=cast(str, list([i for i in group1.elements if i.revealed])))
+    listGroups1["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])) # type: ignore
+    listGroups2["listvariable"] = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])) # type: ignore
+    listboxElements1 = tk.StringVar(value=list([i for i in group1.elements if i.revealed])) # type: ignore
     listElements1["listvariable"] = listboxElements1
-    listboxElements2 = tk.StringVar(value=cast(str, list([i for i in group2.elements if i.revealed])))
+    listboxElements2 = tk.StringVar(value=list([i for i in group2.elements if i.revealed])) # type: ignore
     listElements2["listvariable"] = listboxElements2
 
 
 # Define a function to handle selecting an element
-element1 = 0
-element2 = 0
+element1: Element = Blank
+element2: Element = Blank
 def selectElement1(selection1: Tuple[int, ...]) -> None:
     global element1, element2, group1, group2
-    elementGroup1 = [i for i in group1.elements if i.revealed]
+    elementGroup1: List[Element] = [i for i in group1.elements if i.revealed]
     element1 = elementGroup1[selection1[0]]
     spacesToAdd1 = max([len(i) for i in Elements]) - len(element1.name) + 1
-    if not isinstance(element2, int):
-        spacesToAdd2 = max([len(i) for i in Elements]) - len(element2.name) + 1
-        fusionPreview["text"] = " " * spacesToAdd1 + "{} + {}".format(element1.name, element2.name) + " " * spacesToAdd2
-    else:
-        spacesToAdd2 = max([len(i) for i in Elements]) + 1
-        fusionPreview["text"] = " " * spacesToAdd1 + "{} + ".format(element1.name) + " " * spacesToAdd2
+    spacesToAdd2 = max([len(i) for i in Elements]) - len(element2.name) + 1
+    fusionPreview["text"] = " " * spacesToAdd1 + "{} + {}".format(element1.name, element2.name) + " " * spacesToAdd2
+
 
 def selectElement2(selection2: Tuple[int, ...]) -> None:
     global element1, element2, group1, group2
-    elementGroup2 = [i for i in group2.elements if i.revealed]
+    elementGroup2: List[Element] = [i for i in group2.elements if i.revealed]
     element2 = elementGroup2[selection2[0]]
     spacesToAdd2 = max([len(i) for i in Elements]) - len(element2.name) + 1
-    if not isinstance(element1, int):
-        spacesToAdd1 = max([len(i) for i in Elements]) - len(element1.name) + 1
-        fusionPreview["text"] = " " * spacesToAdd1 + "{} + {}".format(element1.name, element2.name) + " " * spacesToAdd2
-    else:
-        spacesToAdd1 = max([len(i) for i in Elements]) + 1
-        fusionPreview["text"] = " " * spacesToAdd1 + " + {}".format( element2.name) + " " * spacesToAdd2
+    spacesToAdd1 = max([len(i) for i in Elements]) - len(element1.name) + 1
+    fusionPreview["text"] = " " * spacesToAdd1 + "{} + {}".format(element1.name, element2.name) + " " * spacesToAdd2
 
 
 # Define the two groups selection lists
-listboxGroups1 = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
+listboxGroups1 = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])) # type: ignore
 listGroups1 = tk.Listbox(listvariable=listboxGroups1)
 listGroups1.grid(row=0, column=0, sticky="news")
-listGroups1.bind("<Double-1>", lambda e: selectGroup1(listGroups1.curselection()))
+listGroups1.bind("<Double-1>", lambda e: selectGroup1(listGroups1.curselection())) # type: ignore
 
-listboxGroups2 = tk.StringVar(value=cast(str, list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])))
+listboxGroups2 = tk.StringVar(value=list([Groups[i] for i in Groups if Groups[i].isOnlyNonReveal()])) # type: ignore
 listGroups2 = tk.Listbox(listvariable=listboxGroups2)
 listGroups2.grid(row=0, column=4, sticky="news")
-listGroups2.bind("<Double-1>", lambda e: selectGroup2(listGroups2.curselection()))
+listGroups2.bind("<Double-1>", lambda e: selectGroup2(listGroups2.curselection())) # type: ignore
 
 
 # Define the two elements selection lists
 listElements1 = tk.Listbox()
 listElements1.grid(row=0, column=1, sticky="news")
-listElements1.bind("<Double-1>", lambda e: selectElement1(listElements1.curselection()))
+listElements1.bind("<Double-1>", lambda e: selectElement1(listElements1.curselection())) # type: ignore
 
 listElements2 = tk.Listbox()
 listElements2.grid(row=0, column=3, sticky="news")
-listElements2.bind("<Double-1>", lambda e: selectElement2(listElements2.curselection()))
+listElements2.bind("<Double-1>", lambda e: selectElement2(listElements2.curselection())) # type: ignore
 
 
 
@@ -337,38 +323,31 @@ listElements2.bind("<Double-1>", lambda e: selectElement2(listElements2.curselec
 def fuse() -> None:
     # Pull the global variables
     global element1, element2, consoleText, logText
-    # Test if two elements were selected
-    if element1 != 0 and element2 != 0:
-        # Obtain a dictionary out of the two fused elements
-        fusion = {element1, element2}
-        newElement = False
+    # Obtain a dictionary out of the two fused elements
+    fusion = {element1, element2}
+    newElement = False
 
-        # Test for each element
-        for i in list(Elements):
-            if fusion == Elements[i].recipes:
-                # If match is found and element not revealed
-                if not Elements[i].revealed:
-                    # Reveal the element and inform the player
-                    newElement = True
-                    logText.append("Created Element {}!".format(str(Elements[i])))
-                    consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
-                    Elements[i].reveal()
-                    actualizeGroups()
-                # If match is found and element already revealed
-                else:
-                    # Inform the player
-                    newElement = True
-                    logText.append("Element {} already created".format(str(Elements[i])))
-                    consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
+    # Test for each element
+    for i in list(Elements):
+        if fusion == Elements[i].recipes:
+            # If match is found and element not revealed
+            if not Elements[i].revealed:
+                # Reveal the element and inform the player
+                newElement = True
+                logText.append("Created Element {}!".format(str(Elements[i])))
+                consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
+                Elements[i].reveal()
+                actualizeGroups()
+            # If match is found and element already revealed
+            else:
+                # Inform the player
+                newElement = True
+                logText.append("Element {} already created".format(str(Elements[i])))
+                consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
 
-        # If no match were found, inform the player
-        if not newElement:
-            logText.append("No new Element created...")
-            consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
-    
-    else:
-        # Send the error message
-        logText.append("Please select two elements")
+    # If no match were found, inform the player
+    if not newElement:
+        logText.append("No new Element created...")
         consoleText["text"] = "\n".join(logText[-4:-1] + [logText[-1]])
 
 
@@ -385,8 +364,8 @@ fusionButton.pack()
 
 
 # Handle the row and column rescaling
-[main.columnconfigure(i, weight=1) for i in range(5)]
-main.rowconfigure(0, weight=1)
+[main.columnconfigure(i, weight=1) for i in range(5)] # type: ignore
+main.rowconfigure(0, weight=1) # type: ignore
 
 
 # Start the window

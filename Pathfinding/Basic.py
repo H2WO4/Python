@@ -1,19 +1,21 @@
 import tkinter as tk
-from typing import Any, List, Tuple, Union
+from typing import Any, Generic, List, Tuple, TypeVar
 
-class Stack:
-    def __init__(self, data: List[Any] = []) -> None:
+T = TypeVar("T")
+
+class Stack(Generic[T]):
+    def __init__(self, data: List[T] = []) -> None:
         self.data = data
     
-    def push(self, *others: Tuple[Any, ...]) -> None:
-        self.data = list(others) + self.data
+    def push(self, other: T) -> None:
+        self.data = [other] + self.data
     
-    def pull(self) -> Tuple[Any, ...]:
+    def pull(self) -> T:
         out = self.data[0]
         self.data = self.data[1:]
         return out
     
-    def peek(self) -> Any:
+    def peek(self) -> T:
         return self.data[0]
     
     def __len__(self) -> int:
@@ -40,15 +42,14 @@ class Labyrinth:
         return tuple(out)
 
 class GridLabel(tk.Label):
-
-    def __init__(self, x: int, y: int, *args, **kwargs):
+    def __init__(self, x: int, y: int, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.x = x
         self.y = y
         self.bind("<Double-1>", self.findExit)
     
     def findExit(self, _: Any) -> None:
-        p = Stack()
+        p = Stack[Tuple[int, int]]()
         if not lab.isPassable(self.x, self.y):
             return
         p.push((self.x, self.y))
@@ -80,8 +81,8 @@ def update():
         for j in i:
             j["text"] = " " + lab[j.x, j.y] + " "
 
-grid = []
-gridText = []
+grid: List[List[tk.Frame]] = []
+gridText: List[List[GridLabel]] = []
 for i in range(len(lab.data)):
     grid.append([])
     gridText.append([])

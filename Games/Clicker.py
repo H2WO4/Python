@@ -1,7 +1,7 @@
 """ Module Import """
 from time import sleep
 from threading import Thread
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple
 
 """ Object Definition """
 class Currency:
@@ -15,10 +15,10 @@ class Currency:
         return "{} : {}".format(self.name, int(self.value))
 
 class Building:
-    def __init__(self, name: str, description: str, priceFormula: Tuple[Callable[[int], float], str], count: int = 0, **formula: Tuple[Union[Callable, str], ...]):
+    def __init__(self, name: str, description: str, priceFormula: Tuple[Callable[[int], float], str], count: int = 0, **formula: Tuple[Callable[..., float] | str, ...]):
         self.name = name
         self.description = description
-        self.formula: Dict[str, Tuple[Union[Callable, str], ...]] = formula
+        self.formula = formula
         self.priceFormula = priceFormula
         self.price = int(priceFormula[0](count))
         self.count = count
