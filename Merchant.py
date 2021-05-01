@@ -9,7 +9,14 @@ def normal(lowBound: float, highBound: float, mu: float, sigma: float) -> int:
     x = round(gauss(mu, (highBound - lowBound) / sigma))
     if lowBound <= x and x <= highBound:
         return x
-    return normal(mu, sigma, lowBound, highBound)
+    return normal(lowBound, highBound, mu, sigma)
+
+def combine_dicts(*entry: Dict[str, int]) -> Dict[str, int]:
+    output: Dict[str, int] = {}
+    for i in entry:
+        for j in i:
+            output[j] = output.get(j, 0) + i[j]
+    return output
 
 
 class Inventory:
@@ -25,8 +32,9 @@ class Inventory:
     def can_sub(self, other: Dict[str, int]) -> bool:
         return all(self.content.get(i, inf) >= other[i] for i in other)
 
-    def sub(self, *other: Dict[str, int]) -> None:
-        pass
+    def sub(self, other: Dict[str, int]) -> None:
+        for i in other:
+            self.content[i] -= other[i]
 
 
     def move(self, other: Inventory, item: Dict[str, int]) -> None:
@@ -37,23 +45,24 @@ class Inventory:
 
 
 class PoolGen:
-    def __init__(self, results: Dict[str, Tuple[float, ...]], method: Callable[..., int]) -> None:
+    def __init__(self, results: Dict[str, Tuple[Callable[..., int], Tuple[float, ...]]]) -> None:
         self.results = results
-        self.method = method
-    
-    def roll(self, times: int = 1) -> List[Dict[str, int]]:
-        return [{i: self.method(*self.results[i])} for i in choices([j for j in self.results], k=times)]
+
+    def roll(self, times: int = 1) -> List[Dict[str, int]]: 
+        return [{i: self.results[i][0](*self.results[i][1])} for i in choices([j for j in self.results], k=times)]
+
+def equiPool(items: List[str], distribution: Tuple[float, ...], method: Callable[..., int]) -> PoolGen:
+    return PoolGen({i: (method, distribution) for i in items})
+
+def simiPool(items: Dict[str, Tuple[float, ...]], method: Callable[..., int]) -> PoolGen:
+    return PoolGen({i: (method, items[i]) for i in items})
 
 
-def equiPool(items: list[str], distribution: Tuple[float, ...], method: Callable[..., int]) -> PoolGen:
-    return PoolGen({i: distribution for i in items}, method)
 
 
 
 
-A = Inventory("Bag")
+Bag = Inventory("Bag")
 
 Fruits = equiPool(["Apple", "Orange", "Banana", "Rawsberry", "Citrus"], (2, 5, 3, 3), normal)
-A.add(*Fruits.roll(10000))
 
-print(A)
