@@ -19,7 +19,7 @@ def combine_dicts(*entry: Dict[str, int]) -> Dict[str, int]:
     return output
 
 
-class Inventory:
+class Container:
     def __init__(self, name: str) -> None:
         self.name = name
         self.content: Dict[str, int] = {}
@@ -37,7 +37,7 @@ class Inventory:
             self.content[i] -= other[i]
 
 
-    def move(self, other: Inventory, item: Dict[str, int]) -> None:
+    def move(self, other: Container, item: Dict[str, int]) -> None:
         self.sub(item)
         other.add(item)
 
@@ -59,10 +59,12 @@ def simiPool(items: Dict[str, Tuple[float, ...]], method: Callable[..., int]) ->
 
 
 
+class 
 
 
 
-Bag = Inventory("Bag")
+
+Bag = Container("Bag")
 
 Fruits = equiPool(["Apple", "Orange", "Banana", "Rawsberry", "Citrus"], (2, 5, 3, 3), normal)
 
