@@ -4,8 +4,6 @@ from math import inf
 from typing import Callable, Dict, List, Literal, Tuple
 from random import choices, gauss
 
-Items = Dict[str, int]
-
 
 # Normal distribution within bounds with automatic sigma
 def normal(lowBound: float, highBound: float, mu: float, sigma: float) -> int:
@@ -14,26 +12,31 @@ def normal(lowBound: float, highBound: float, mu: float, sigma: float) -> int:
         return x
     return normal(lowBound, highBound, mu, sigma)
 
-def combine_dicts(*entry: Items) -> Items:
-    return reduce(lambda d1, d2: {i: d1.get(i, 0) + d2.get(i, 0) for i in d1 | d2}, entry)
+def trim_dict(entry: Dict[str, int]) -> Dict[str, int]:
+    return {i: entry[i] for i in entry if entry[i] != 0}
+
+def combine_dicts(*entry: Dict[str, int]) -> Dict[str, int]:
+    return trim_dict(reduce(lambda d1, d2: {i: d1.get(i, 0) + d2.get(i, 0) for i in (d1 | d2)}, entry))
+
+def mul_dict(entry: Dict[str, int], times: int) -> Dict[str, int]:
+    return {i: entry[i] * times for i in entry}
 
 
 class Container:
     def __init__(self, name: str) -> None:
         self.name = name
-        self.content: Items = {}
+        self.content: Dict[str, int] = {}
     
-    def add(self, *other: Items) -> None:
+    def add(self, *other: Dict[str, int]) -> None:
         self.content = combine_dicts(self.content, *other)
 
-    def can_sub(self, other: Items) -> bool:
+    def can_sub(self, other: Dict[str, int]) -> bool:
         return all(self.content.get(i, inf) >= other[i] for i in other)
 
-    def sub(self, other: Items) -> None:
-        for i in other:
-            self.content[i] -= other[i]
+    def sub(self, other: Dict[str, int]) -> None:
+        self.add(mul_dict(other, -1))
 
-    def move(self, other: Container, items: Items) -> None:
+    def move(self, other: "Container", items: Dict[str, int]) -> None:
         self.sub(items)
         other.add(items)
 
@@ -48,10 +51,10 @@ class PoolGen:
     def add(self, entries: Dict[str, Tuple[Callable[..., int], Tuple[float, ...]]]) -> None:
         self.content |= entries
 
-    def roll(self, times: int = 1) -> List[Items]: 
+    def roll(self, times: int = 1) -> List[Dict[str, int]]: 
         return [{i: self.content[i][0](*self.content[i][1])} for i in choices([j for j in self.content], k=times)]
 
-def equiPool(items: List[str], distribution: Tuple[float, ...], method: Callable[..., int]) -> PoolGen:
+def equiPool(items: List[str], method: Callable[..., int], distribution: Tuple[float, ...]) -> PoolGen:
     return PoolGen({i: (method, distribution) for i in items})
 
 def simiPool(items: Dict[str, Tuple[float, ...]], method: Callable[..., int]) -> PoolGen:
@@ -59,20 +62,20 @@ def simiPool(items: Dict[str, Tuple[float, ...]], method: Callable[..., int]) ->
 
 
 class ExchangeInterface:
-    def __init__(self, name: str, content: List[Tuple[Items, Items]]) -> None:
+    def __init__(self, name: str, content: List[Tuple[Dict[str, int], Dict[str, int]]]) -> None:
         self.name = name
         self.content = content
     
-    def add(self, *content: Tuple[Items, Items]) -> None:
+    def add(self, *content: Tuple[Dict[str, int], Dict[str, int]]) -> None:
         for i in content:
             self.content.append(i)
 
     def exchange(self, source: Container, destination: Container, index: int, times: int | Literal["max"] = 1) -> None:
         if times == "max": times = min([source.content[i] // self.content[index][0][i] for i in self.content[index][0]])
 
-        if source.can_sub({i: self.content[index][0][i] * times for i in self.content[index][0]}) and times > 0:
-            source.sub({i: self.content[index][0][i] * times for i in self.content[index][0]})
-            destination.add({i: self.content[index][1][i] * times for i in self.content[index][1]})
+        if times > 0 and source.can_sub(mul_dict(self.content[index][0], times)):
+            source.sub(mul_dict(self.content[index][0], times))
+            destination.add(mul_dict(self.content[index][1], times))
         
         else: print("Insufficient ressources")
 
@@ -81,7 +84,7 @@ class ExchangeInterface:
 
 
 class MerchantInterface(ExchangeInterface):
-    def __init__(self, name: str, content: List[Tuple[Items, Items]]) -> None:
+    def __init__(self, name: str, content: List[Tuple[Dict[str, int], Dict[str, int]]]) -> None:
         self.name = name
         self.content = content
         self.inventory = Container(name + "'s Wares")
@@ -89,10 +92,10 @@ class MerchantInterface(ExchangeInterface):
     def exchange(self, source: Container, destination: Container, index: int, times: int | Literal["max"] = 1) -> None:
         if times == "max": times = min(min([source.content.get(i, 0) // self.content[index][0][i] for i in self.content[index][0]]), min([self.inventory.content.get(i, 0) // self.content[index][1][i] for i in self.content[index][1]]))
 
-        if source.can_sub({i: self.content[index][0][i] * times for i in self.content[index][0]}) and self.inventory.can_sub({i: self.content[index][1][i] * times for i in self.content[index][1]}) and times > 0:
-            source.sub({i: self.content[index][0][i] * times for i in self.content[index][0]})
-            self.inventory.sub({i: self.content[index][1][i] * times for i in self.content[index][1]})
-            destination.add({i: self.content[index][1][i] * times for i in self.content[index][1]})
+        if times > 0 and source.can_sub(mul_dict(self.content[index][0], times)) and self.inventory.can_sub(mul_dict(self.content[index][1], times)):
+            source.sub(mul_dict(self.content[index][0], times))
+            self.inventory.sub(mul_dict(self.content[index][1], times))
+            destination.add(mul_dict(self.content[index][1], times))
         
         else: print("Insufficient ressources")
 
@@ -101,14 +104,7 @@ class MerchantInterface(ExchangeInterface):
 Bag = Container("Bag")
 MoneyBag = Container("Money Bag")
 
-Fruits = PoolGen(
-{
-    "Apple": (normal, (2, 5, 3, 3)),
-    "Citrus": (normal, (2, 5, 3, 3)),
-    "Banana": (normal, (2, 5, 3, 3)),
-    "Orange": (normal, (2, 5, 3, 3)),
-    "Rawsberry": (normal, (2, 5, 3, 3))
-})
+Fruits = equiPool(["Apple", "Citrus", "Banana", "Orange", "Rawsberry"], normal, (2, 5, 3, 3))
 Bag.add(*Fruits.roll(10000))
 
 FruitsBuyer = MerchantInterface("Fruits Buyer",
@@ -122,4 +118,4 @@ FruitsBuyer.exchange(Bag, MoneyBag, 0, "max")
 FruitsBuyer.exchange(Bag, MoneyBag, 1, "max")
 
 
-print(Bag, MoneyBag, sep="\n\n")
+print(Bag, MoneyBag, FruitsBuyer.inventory, sep="\n\n")
