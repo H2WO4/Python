@@ -1,4 +1,5 @@
 # Import
+from __future__ import annotations
 from functools import reduce
 from math import inf
 from typing import Callable, Dict, List, Literal, Tuple
@@ -36,7 +37,7 @@ class Container:
     def sub(self, other: Dict[str, int]) -> None:
         self.add(mul_dict(other, -1))
 
-    def move(self, other: "Container", items: Dict[str, int]) -> None:
+    def move(self, other: Container, items: Dict[str, int]) -> None:
         self.sub(items)
         other.add(items)
 
@@ -100,12 +101,30 @@ class MerchantInterface(ExchangeInterface):
         else: print("Insufficient ressources")
 
 
+class CollectionPoint:
+    members: Dict[str, CollectionPoint] = {}
+
+    def __init__(self, name: str, pool: PoolGen) -> None:
+        CollectionPoint.members[name] = self
+
+        self.name = name
+        self.pool = pool
+
+
+class Inventory:
+    members: Dict[str, Inventory] = {}
+
+    def __init__(self, name: str, container: Container) -> None:
+        Inventory.members[name] = self
+
+        self.name = name
+        self.container = container
+
 
 Bag = Container("Bag")
 MoneyBag = Container("Money Bag")
 
 Fruits = equiPool(["Apple", "Citrus", "Banana", "Orange", "Rawsberry"], normal, (2, 5, 3, 3))
-Bag.add(*Fruits.roll(10000))
 
 FruitsBuyer = MerchantInterface("Fruits Buyer",
 [
@@ -114,8 +133,22 @@ FruitsBuyer = MerchantInterface("Fruits Buyer",
 ])
 FruitsBuyer.inventory.add({"Gold": 10000, "Copper": 2000})
 
-FruitsBuyer.exchange(Bag, MoneyBag, 0, "max")
-FruitsBuyer.exchange(Bag, MoneyBag, 1, "max")
+
+Self = Inventory("Self", Bag)
+Orchard = CollectionPoint("Ochard", Fruits)
 
 
-print(Bag, MoneyBag, FruitsBuyer.inventory, sep="\n\n")
+quitting = False
+while not quitting:
+    match input().split(" "):
+        case ["collect", x, n]:
+            Bag.add(*CollectionPoint.members[x].pool.roll(int(n)))
+
+        case ["see", x]:
+            print(Inventory.members[x].container)
+
+        case ["pause"]:
+            pass
+
+        case ["quit"]:
+            quitting = True

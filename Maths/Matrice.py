@@ -1,5 +1,6 @@
 from math import sqrt
 from typing import List
+from __future__ import annotations
 
 
 class DimensionError(Exception):
