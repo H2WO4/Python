@@ -22,6 +22,9 @@ def combine_dicts(*entry: Dict[str, int]) -> Dict[str, int]:
 def mul_dict(entry: Dict[str, int], times: int) -> Dict[str, int]:
     return {i: entry[i] * times for i in entry}
 
+def print_dict(entry: Dict[str, int]) -> str:
+    return "\n".join(["{} x{}".format(i, entry[i]) for i in sorted(entry.keys())])
+
 
 class Container:
     def __init__(self, name: str) -> None:
@@ -73,12 +76,14 @@ class ExchangeInterface:
 
     def exchange(self, source: Container, destination: Container, index: int, times: int | Literal["max"] = 1) -> None:
         if times == "max": times = min([source.content[i] // self.content[index][0][i] for i in self.content[index][0]])
+        if times <= 0: raise ValueError
 
-        if times > 0 and source.can_sub(mul_dict(self.content[index][0], times)):
-            source.sub(mul_dict(self.content[index][0], times))
-            destination.add(mul_dict(self.content[index][1], times))
-        
-        else: print("Insufficient ressources")
+        to_take = mul_dict(self.content[index][0], times)
+        to_give = mul_dict(self.content[index][1], times)
+
+        if source.can_sub(to_take):
+            source.sub(to_take)
+            destination.add(to_give)
 
     def __str__(self) -> str:
         return "{}:\n".format(self.name) + "\n".join(["[{}] {} -> {}".format(i+1, ", ".join(["{} x{}".format(j, self.content[i][0][j]) for j in self.content[i][0]]), ", ".join(["{} x{}".format(j, self.content[i][1][j]) for j in self.content[i][1]])) for i in range(len(self.content))])
@@ -92,13 +97,15 @@ class MerchantInterface(ExchangeInterface):
     
     def exchange(self, source: Container, destination: Container, index: int, times: int | Literal["max"] = 1) -> None:
         if times == "max": times = min(min([source.content.get(i, 0) // self.content[index][0][i] for i in self.content[index][0]]), min([self.inventory.content.get(i, 0) // self.content[index][1][i] for i in self.content[index][1]]))
+        if times <= 0: raise ValueError
 
-        if times > 0 and source.can_sub(mul_dict(self.content[index][0], times)) and self.inventory.can_sub(mul_dict(self.content[index][1], times)):
-            source.sub(mul_dict(self.content[index][0], times))
-            self.inventory.sub(mul_dict(self.content[index][1], times))
-            destination.add(mul_dict(self.content[index][1], times))
-        
-        else: print("Insufficient ressources")
+        to_take = mul_dict(self.content[index][0], times)
+        to_give = mul_dict(self.content[index][1], times)
+
+        if source.can_sub(to_take) and self.inventory.can_sub(to_give):
+            source.sub(to_take)
+            self.inventory.sub(to_give)
+            destination.add(to_give)
 
 
 class CollectionPoint:
@@ -119,6 +126,9 @@ class Inventory:
 
         self.name = name
         self.container = container
+    
+    def __str__(self) -> str:
+        return str(self.container)
 
 
 Bag = Container("Bag")
@@ -137,15 +147,24 @@ FruitsBuyer.inventory.add({"Gold": 10000, "Copper": 2000})
 Self = Inventory("Self", Bag)
 Orchard = CollectionPoint("Ochard", Fruits)
 
+Self.container.add(*Orchard.pool.roll(100))
 
 quitting = False
 while not quitting:
-    match input().split(" "):
+    match input().lower().split():
         case ["collect", x, n]:
-            Bag.add(*CollectionPoint.members[x].pool.roll(int(n)))
+            output = combine_dicts(*CollectionPoint.members[x].pool.roll(int(n)))
+            print("You collected {} times in {} and found:\n{}\n".format(n, x, print_dict(output)))
+            Bag.add(output)
 
         case ["see", x]:
-            print(Inventory.members[x].container)
+            x = eval(x.title())
+            match x:
+                case Inventory():
+                    print(x.container)
+
+                case _:
+                    raise NameError
 
         case ["pause"]:
             pass
