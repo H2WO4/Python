@@ -1,6 +1,8 @@
+from __future__ import annotations
 import tkinter as tk
 import os, json, glob
 from typing import Any, Dict, List, Set, Tuple
+
 
 def neighbors(x: int, y: int) -> Tuple[Building, ...]:
     output: List[Building] = []

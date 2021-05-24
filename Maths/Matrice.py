@@ -1,6 +1,6 @@
+from __future__ import annotations
 from math import sqrt
 from typing import List
-from __future__ import annotations
 
 
 class DimensionError(Exception):
@@ -22,10 +22,6 @@ class Matrix:
                 raise DimensionError("Matrix is irregular hence cannot exist")
         
         self.columns = columnsArray[0]
-
-        if self.lines == self.columns:
-            self.__class__ = SquareMatrix
-            self.__init__(self.value)
 
     def __str__(self) -> str:
         output = ""
@@ -154,15 +150,16 @@ class SquareMatrix(Matrix):
         if self.lines != self.columns:
             raise DimensionError("Square matrix has different number of lines and columns")
         
-        det1, det2 = self.value[0][0], self.value[self.lines-1][0]
-        for i in range(self.lines):
-            if i != 0:
-                det1 *= self.value[i][i]
-                det2 *= self.value[self.lines-i-1][i]
-        self.determinant = det1 - det2
+        def suppr(a: List[List[float]], i: int, j: int) -> List[List[float]]: return [[a[k][l] for l in range(len(a[k])) if l != j] for k in range(len(a)) if k != i]
+        self.determinant = 0
+        if self.lines == 2:
+            self.determinant = value[0][1] * value[1][0] - value[0][0] * value[1][1]
+        else:
+            for i in range(self.lines):
+                self.determinant += (-1**i)*value[0][i]*SquareMatrix(suppr(value, 0, i))
 
         output = 0
-        for i in range (self.lines):
+        for i in range(self.lines):
             output += self.value[i][i]
         self.trace = output
     
@@ -189,7 +186,8 @@ class SquareMatrix(Matrix):
             cofactor[2][0] = self.value[1][0] * self.value[2][1] - self.value[1][1] * self.value[2][0]
             cofactor[2][1] = -(self.value[0][0] * self.value[1][2] - self.value[0][2] * self.value[1][0])
             cofactor[2][2] = self.value[0][0] * self.value[1][1] - self.value[0][1] * self.value[1][0]
-            return SquareMatrix((Matrix(cofactor) * (1/self.determinant)).value)
+            a = [[int(j) if int(j) == j else j for j in i] for i in (Matrix(cofactor) * (1/self.determinant)).value]
+            return SquareMatrix(a) # type: ignore
     
     def __truediv__(self, other: float | SquareMatrix) -> SquareMatrix:
         if isinstance(other, SquareMatrix):
@@ -218,10 +216,3 @@ def identityMatrix(dimension: int) -> SquareMatrix:
             else:
                 output[i].append(0)
     return SquareMatrix(output)
-
-
-A = Matrix([[2,3],[5,7]])
-B = Matrix([[6,2],[4,0]])
-
-print(A @ B)
-print(A.hamadard(B))
