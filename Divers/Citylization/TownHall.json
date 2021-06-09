@@ -1,0 +1,36 @@
+{
+    "name" : "Town Hall",
+    "id" : "town_hall",
+    "type" : "building",
+    "symbol" : "*",
+    "description" : "Produces 3 Gold every turn.\nProduces +1 Gold per housing.",
+    "yields" :
+    [
+        {
+            "type" : "turn",
+            "gains" :
+            [
+                {
+                    "ressource" : "gold",
+                    "amount" : 3,
+                    "modifiers" :
+                    [
+                        { 
+                            "scope" : "global",
+                            "targets" :
+                            [
+                                {
+                                    "type" : "tag",
+                                    "target" : "housing"
+                                }
+                            ],
+                            "type" : "additive",
+                            "amount" : 1
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tags" : []
+}

@@ -1,0 +1,14 @@
+{
+    "name" : "Small House",
+    "id" : "small_house",
+    "type" : "building",
+    "symbol" : "h",
+    "description" : "Counts as housing.",
+    "yields" : [],
+    "tags" :
+    [
+        {
+            "name" : "housing"
+        }
+    ]
+}

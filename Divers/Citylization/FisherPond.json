@@ -1,0 +1,36 @@
+{
+    "name" : "Fisher's Pond",
+    "id" : "fisher",
+    "type" : "building",
+    "symbol" : "P",
+    "description" : "Produces 2 Fish every turn.\nProduces +3 Fish per adjacent water source.",
+    "yields" :
+    [
+        {
+            "type" : "turn",
+            "gains" :
+            [
+                {
+                    "ressource" : "fish",
+                    "amount" : 2,
+                    "modifiers" :
+                    [
+                        {
+                            "scope" : "direct_neighbors",
+                            "targets" :
+                            [
+                                {
+                                    "type" : "tag",
+                                    "target" : "water"
+                                }
+                            ],
+                            "type" : "additive",
+                            "amount" : 3
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tags" : []
+}

@@ -25,7 +25,7 @@ def mul_dict(entry: Dict[str, int], times: int) -> Dict[str, int]:
     """ Return the entry dictionaries with its values multiplied by times """
     return {i: entry[i] * times for i in entry}
 
-def print_dict(entry: Dict[str, int]) -> str:
+def text_dict(entry: Dict[str, int]) -> str:
     """ Return a string representation of the dictionary to use in printing """
     return "\n".join(["{} x{}".format(i, entry[i]) for i in sorted(entry.keys())])
 
@@ -49,7 +49,7 @@ class Container:
         other.add(items)
 
     def __str__(self) -> str:
-        return "\n".join(["{} x{}".format(i, self.content[i]) for i in sorted(self.content)])
+        return text_dict(self.content)
 
 
 class PoolGen:
@@ -196,14 +196,14 @@ while not quitting:
     match input().split():
         case ["collect", x, n]:
             output = combine_dicts(*CollectionPoint.members[x].pool.roll(int(n)))
-            print("You collected {} times in {} and found:\n{}\n".format(n, x, print_dict(output)))
+            print("You collected {} times in {} and found:\n{}\n".format(n, x, text_dict(output)))
             Bag.add(output)
 
         case ["see", x]:
             if x in Inventory.members:
                 print(Inventory.members[x], "\n")
 
-            if x in CollectionPoint.members:
+            elif x in CollectionPoint.members:
                 print(CollectionPoint.members[x], "\n")
 
         case ["pause"]:
