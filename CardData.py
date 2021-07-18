@@ -4,6 +4,7 @@ from typing import List, Literal
 
 CardType = Literal["ATK", "SKL", "POW"]
 CardTarget = Literal["ONE", "NAN"]
+DamageType = Literal["NORMAL", "PIERCE", "MAGIC"]
 
 GameManager = EventManager()
 
@@ -94,6 +95,9 @@ class Status:
 	def onBan(self, card: Card) -> None:
 		pass
 
+	def onLoseHP(self, amount: int) -> int:
+		return amount
+
 class PermanentStatus(Status):
 	def __init__(self, name: str, owner: Actor, potency: int) -> None:
 		super().__init__(name, owner, potency, -1)
@@ -127,33 +131,58 @@ class TurnBasedStatus(Status):
 """ Events """
 
 class DamageEvent(Event):
-	def __init__(self, source: Actor, target: Actor, damage: int) -> None:
+	def __init__(self, source: Actor, target: Actor, damage: int, damageType: DamageType) -> None:
 		super().__init__()
 		self.source = source
 		self.target = target
 		self.damage = damage
+		self.damageType = damageType
 
 	def update(self) -> None:
-		strength = self.source.getStatus("Strength")
-		if strength is not None:
-			self.damage += strength.potency
+		# Apply Strength, if any
+		if self.damageType != "MAGIC":
+			strength = self.source.getStatus("Strength")
+			if strength is not None:
+				self.damage += strength.potency
 		
+			# Return if damage is now 0
+			if self.damage <= 0:
+				return
+
+		if self.damageType != "MAGIC":
+			# Use Block, if any
+			if self.target.block > 0:
+				# Subtract Block and damage
+				self.target.block = max(self.target.block - self.damage, 0)
+				self.damage = max(self.damage - self.target.block, 0)
+				# Displays result accordingly
+				if self.target.block > 0:
+					print(f"{self.target.name} lost {self.damage} Block. They have {self.target.block} Block left.")
+				else:
+					print(f"{self.target.name} lost {self.damage} Block. Their Block was broken.")
+
+			# Return if damage is now 0
+			if self.damage <= 0:
+				return
+
+		# Apply Statues, if any
+		for st in self.target.statues:
+			self.damage = st.onLoseHP(self.damage)
+
+		# Return if damage is now 0
 		if self.damage <= 0:
 			return
 
-		if self.target.block >= self.damage:
-			print(f"{self.target.name} lost {self.damage} Block. They have {self.target.block} Block left.")
-		else:
-			pass
-
-		self.target.health -= self.damage
+		# Subtract health
+		self.target.health = max(self.target.health - self.damage, 0)
 		
-		if (self.target.health <= 0):
-			self.target.health = 0
-			print(f"{self.target.name} is dead.")
+		# Display result accordingly
+		if self.target.health > 0:
+			print(f"{self.target.name} lost {self.damage} HP. They have {self.target.health} HP.")
 		else:
-			print(f"{self.target.name} lost {self.damage} HP. They now have {self.target.health} HP.")
+			print(f"{self.target.name} is dead.")
 
+		# Tell the event manager that it can continue
 		self.isDone = True
 
 
@@ -172,4 +201,4 @@ class Strike(Card):
 		self.damage = 6
 	
 	def onPlay(self, source: Actor, target: Actor) -> None:
-		GameManager.addToBot(DamageEvent(source, target, self.damage))
+		GameManager.addToBot(DamageEvent(source, target, self.damage, "NORMAL"))
