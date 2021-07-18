@@ -36,8 +36,9 @@ class Actor:
 
 
 class Card:
-	def __init__(self, name: str, cost: int, type: CardType, target: CardTarget) -> None:
+	def __init__(self, name: str, description: str, cost: int, type: CardType, target: CardTarget) -> None:
 		self.name = name
+		self.description = description
 		self.cost = cost
 		self.type = type
 		self.target = target
@@ -56,6 +57,9 @@ class Card:
 
 	def onBan(self, source: Actor) -> None:
 		pass
+
+	def dynamicDescription(self) -> str:
+		return eval(f"f'{self.description}'")
 
 
 class Status:
@@ -147,22 +151,24 @@ class DamageEvent(Event):
 		
 			# Return if damage is now 0
 			if self.damage <= 0:
+				self.isDone = True
 				return
 
 		if self.damageType != "MAGIC":
 			# Use Block, if any
 			if self.target.block > 0:
 				# Subtract Block and damage
-				self.target.block = max(self.target.block - self.damage, 0)
-				self.damage = max(self.damage - self.target.block, 0)
+				blockLost = min(self.damage, self.target.block)
+				self.target.block, self.damage = max(self.target.block - self.damage, 0), max(self.damage - self.target.block, 0)
 				# Displays result accordingly
 				if self.target.block > 0:
-					print(f"{self.target.name} lost {self.damage} Block. They have {self.target.block} Block left.")
+					print(f"{self.target.name} lost {blockLost} Block. They have {self.target.block} Block left.")
 				else:
-					print(f"{self.target.name} lost {self.damage} Block. Their Block was broken.")
+					print(f"{self.target.name} lost {blockLost} Block. Their Block was broken.")
 
 			# Return if damage is now 0
 			if self.damage <= 0:
+				self.isDone = True
 				return
 
 		# Apply Statues, if any
@@ -171,6 +177,7 @@ class DamageEvent(Event):
 
 		# Return if damage is now 0
 		if self.damage <= 0:
+			self.isDone = True
 			return
 
 		# Subtract health
@@ -178,7 +185,7 @@ class DamageEvent(Event):
 		
 		# Display result accordingly
 		if self.target.health > 0:
-			print(f"{self.target.name} lost {self.damage} HP. They have {self.target.health} HP.")
+			print(f"{self.target.name} lost {self.damage} HP. They have {self.target.health} HP left.")
 		else:
 			print(f"{self.target.name} is dead.")
 
@@ -192,12 +199,19 @@ class StrengthStatus(PermanentStatus):
 	def __init__(self, owner: Actor, potency: int) -> None:
 		super().__init__("Strength", owner, potency)
 
+class TemporaryStrengthStatus(PermanentStatus):
+	def __init__(self, owner: Actor, potency: int) -> None:
+		super().__init__("Temporary Strength", owner, potency)
+	
+	def onTurnEnd(self) -> None:
+		self.owner.statues.remove(self)
+
 
 """ Cards """
 
 class Strike(Card):
 	def __init__(self) -> None:
-		super().__init__("Strike", 1, "ATK", "ONE")
+		super().__init__("Strike", "Deal {self.damage} damage.", 1, "ATK", "ONE")
 		self.damage = 6
 	
 	def onPlay(self, source: Actor, target: Actor) -> None:
