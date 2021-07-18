@@ -65,12 +65,12 @@ class Inventory:
 
     def addItem(self, item: Item, number: int) -> None:
         item.number += number
-        self.items[item.name] = item
+        self.items[item.name] = item #type: ignore
 
     def view(self) -> None:
-        for item in self.items.values():
-            if item.number >= 1:
-                print("{} x{}".format(item.name, item.number))
+        for item in self.items.values(): #type: ignore
+            if item.number >= 1: #type: ignore
+                print("{} x{}".format(item.name, item.number)) #type: ignore
 
 class Skill:
     def __init__(self, name: str, power: int, effect: str, mpCost: int, tpCost: int, scope: str) -> None:
@@ -549,7 +549,7 @@ while True:
 
                         action = input().title()
                         if action in targets:
-                            print(targets[action])
+                            print(targets[action]) #type: ignore
 
                         else:
                             print("\nTarget not found")
@@ -588,8 +588,8 @@ while True:
 
                 if i.HMTP[1] >= i.skillList[skill].mtpCost[0] and i.HMTP[2] >= i.skillList[skill].mtpCost[1]:
                     if i.skillList[skill].scope == "One":
-                        target = choice(list(targets.keys()))
-                        i.useSkillOne(skill, targets[target])
+                        target = choice(list(targets.keys())) #type: ignore
+                        i.useSkillOne(skill, targets[target]) #type: ignore
 
                     elif i.skillList[skill].scope == "All Ennemies":
                         i.useSkillAll(skill, "Ennemies")
