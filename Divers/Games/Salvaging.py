@@ -11,17 +11,14 @@ class Treasure:
         self.quantity = 0
 
     def __str__(self):
-        return "{}: {}".format(self.name, self.quantity)
+        return f"{self.name}: {self.quantity}"
 
 class Chest:
     def __init__(self, content: List[Treasure]):
         self.content = content
     
     def __str__(self):
-        output: List[str] = []
-        for i in self.content:
-            output.append(i.name)
-        return str(output)
+        return "\t".join(str(i) for i in self.content)
     
 
 class Pool:
