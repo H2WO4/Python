@@ -1,10 +1,11 @@
 from __future__ import annotations
+from enum import Enum
 from random import choices, shuffle
 from EventSystemTemplate import Event, EventManager
 from typing import Callable, Dict, List, Literal
 
-# Define a color enum for text priting
-class TextColor:
+# Define a Color class for text priting
+class Color:
 	PURPLE = '\033[95m'
 	BLUE = '\033[94m'
 	CYAN = '\033[96m'
@@ -15,57 +16,37 @@ class TextColor:
 	UNDERLINE = '\033[4m'
 	BLANK = '\033[0m'
 
-# Define Types for enforcing types and reducing chances of bugs
-class ElementsT:
-	def __init__(self, value: str) -> None:
-		self.value = value	
+# Define enums for Elements, Card Types, Card Colors and Card Tags
+class Elements(Enum):
+	LIFE = "Life"
+	SOUL = "Soul"
+	VIRTUE = "Virtue"
+	SIN = "Sin"
+	BELIEF = "Belief"
+	NATURE = "Nature"
 
-class CardColorT:
-	def __init__(self, value: str) -> None:
-		self.value = value
-	
-	def __str__(self) -> str:
-		return self.value.title()
+class CardType(Enum):
+	CREATION = "Creation"
+	SPELL = "Spell"
+	DOGMA = "Dogma"
 
-class CardTagsT:
-	def __init__(self, value: str) -> None:
-		self.value = value
+class CardColor(Enum):
+	WHITE = "White"
+	BLACK = "Black"
+	GREY = "Grey"
+	PURPLE = "Purple"
 
-class CardPileT:
-	def __init__(self, value: str) -> None:
-		self.value = value
+class CardTags(Enum):
+	GENESIS = "Genesis"
+	APOCALYPSE = "Apocalypse"
 
-
-# Define enums for Elements, Card Colors and Card Tags
-class Elements:
-	LIGHT = ElementsT("LIGHT")
-	DARK = ElementsT("DARK")
-	LIFE = ElementsT("LIFE")
-
-class CardColor:
-	WHITE = CardColorT("WHITE")
-	BLACK = CardColorT("BLACK")
-	GREY = CardColorT("GREY")
-	PURPLE = CardColorT("PURPLE")
-
-class CardTags:
-	GENESIS = CardTagsT("GENESIS")
-	APOCALYPSE = CardTagsT("APOCALYPSE")
-
-class CardPile:
-	DRAW = CardPileT("DRAW")
-	HAND = CardPileT("HAND")
-	DISCARD = CardPileT("DISCARD")
-	WORLD = CardPileT("WORLD")
-	ABOVE = CardPileT("ABOVE")
-	BELOW = CardPileT("BELOW")
-
-
-# Define lists containing the entire enums
-AllElements: List[ElementsT] = [getattr(Elements, attr) for attr in vars(Elements) if not attr.startswith("__")]
-AllCardColors: List[CardColorT] = [getattr(CardColor, attr) for attr in vars(CardColor) if not attr.startswith("__")]
-AllTags: List[CardTagsT] = [getattr(CardTags, attr) for attr in vars(CardTags) if not attr.startswith("__")]
-AllPiles: List[CardPileT] = [getattr(CardPile, attr) for attr in vars(CardPile) if not attr.startswith("__")]
+class CardPile(Enum):
+	DRAW = "draw"
+	HAND = "hand"
+	DISCARD = "discard"
+	WORLD = "world"
+	ABOVE = "above"
+	BELOW = "below"
 
 
 # Modifies the EventManager to fit 1v1 combat, adding a way to get a player's opponent
@@ -106,35 +87,38 @@ class Actor:
 		self.above = CardStack()
 		self.below = CardStack()
 
-	def playCard(self, card: Card) -> None:
-		pass
-
 	def setDeck(self, deck: List[Card]) -> None:
 		self.deck = CardStack(deck)
 
 	def setName(self, name: str) -> None:
 		self.name = name
 
-	def worldValue(self) -> Dict[ElementsT, int]:
-		output: Dict[ElementsT, int] = {i: 0 for i in AllElements}
-		for i in self.world:
-			for j in i.value:
-				output[j] += i.value[j]
+	def worldValue(self) -> Dict[Elements, int]:
+		output: Dict[Elements, int] = {}
+		for card in self.world:
+			for elem in card.value:
+				output[elem] = output.get(elem, 0) + card.value[elem]
 		return output
 
 
 # Define a Card class, representing a playing card
 class Card:
-	def __init__(self, name: str, description: str, color: CardColorT) -> None:
-		self.name = name
-		self.description = description
-		self.color = color
+	def __init__(self) -> None:
+		self.name: str
+		self.description: str
+		self.type: CardType
+		self.color: CardColor
 
-		self.value: Dict[ElementsT, int] = {}
-		self.tags: List[CardTagsT] = []
+		self.value: Dict[Elements, int] = {}
+		self.tags: List[CardTags] = []
 
-	def onPlay(self, source: Actor) -> None:
-		pass
+	def onPlay(self, source: Actor, origin: CardPile) -> None:
+		pile = getCardStack(source, origin)
+		pile.remove(self)
+		if self.type == CardType.CREATION:
+			source.world.append(self)
+		else:
+			source.discard.append(self)
 
 	def onDraw(self, source: Actor) -> None:
 		pass
@@ -145,14 +129,14 @@ class Card:
 	def onDescend(self, source: Actor) -> None:
 		pass
 
-	def onReturn(self, source: Actor, origin: Literal["ABOVE", "BELOW"]) -> None:
+	def onReturn(self, source: Actor, origin: Literal[CardPile.ABOVE, CardPile.BELOW]) -> None:
 		pass
 
 	def dynamicDescription(self) -> str:
 		return eval(f"f'{self.description}'")
 
 	def __str__(self) -> str:
-		return f"{self.name}, {self.color}:\n{self.dynamicDescription()}"
+		return f"{Color.GREEN}{self.name}{Color.BLANK}, {Color.UNDERLINE}{self.type.value}{Color.BLANK}, {Color.UNDERLINE}{self.color.value}{Color.BLANK}:\n{self.dynamicDescription()}"
 
 
 # Define a CardStack class, representing an ordered pile of cards
@@ -164,10 +148,16 @@ class CardStack(List[Card]):
 		return list.__add__(self, other) # type: ignore
 
 	def __str__(self) -> str:
-		return "\n".join([f"[{TextColor.PURPLE}{i}{TextColor.BLANK}] {TextColor.GREEN}{card.name}{TextColor.BLANK}" for i, card in enumerate(self)])
+		return "\n".join([f"[{Color.PURPLE}{i}{Color.BLANK}] {Color.GREEN}{card.name}{Color.BLANK}" for i, card in enumerate(self)])
 
 	def getTopNCard(self, n: int) -> List[Card]:
 		return self[n:]
+
+
+# Function transforming a CardPile argument into the corresponding CardStack
+def getCardStack(source: Actor, pile: CardPile) -> CardStack:
+	return getattr(source, pile.value)
+
 
 """ Events """
 
@@ -204,7 +194,7 @@ class SetupEvent(Event):
 		# Tell the event manager we're done
 		self.isDone = True
 
-# Standart damage event, handling possible multi-hits
+# Standard damage event, handling possible multi-hits
 class DamageEvent(Event):
 	def __init__(self, source: Actor, target: Actor, damage: int, repeat: int = 1) -> None:
 		super().__init__()
@@ -221,16 +211,34 @@ class DamageEvent(Event):
 			
 			# Display result accordingly
 			if self.target.health > 0:
-				print(f"{self.target.name} lost {self.damage} HP. They have {self.target.health} HP left.")
+				print(f"{Color.BLUE}{self.target.name}{Color.BLANK} lost {Color.PURPLE}{self.damage}{Color.BLANK} HP. They have {Color.PURPLE}{self.target.health}{Color.BLANK} HP left.")
 			else:
-				print(f"{self.target.name} is dead.")
+				print(f"{Color.BLUE}{self.target.name}{Color.BLANK} is dead.")
 				break
 
 		# Tell the event manager that it can continue
 		self.isDone = True
 
+# Standard healing event
+class RecoverEvent(Event):
+	def __init__(self, target: Actor, potency: int) -> None:
+		super().__init__()
+		self.target = target
+		self.potency = potency
+	
+	def update(self) -> None:
+		# Add the health
+		self.target.health += self.potency
+
+		# Tell the player how much health was healed
+		print(f"{Color.BLUE}{self.target.name}{Color.BLANK} healed {Color.PURPLE}{self.potency}{Color.BLANK} HP. They have {Color.PURPLE}{self.target.health}{Color.BLANK} HP left.")
+
+		# Tell the event manager that it can continue
+		self.isDone = True
+
+# Streamlined event to select cards based on user input
 class SelectCardsEvent(Event):
-	def __init__(self, owner: Actor, source: CardPileT, potency: int, anyNumber: bool, random: bool, filter: Callable[[Card], bool], consumer: Callable[[List[Card]], None]) -> None:
+	def __init__(self, owner: Actor, source: CardPile,  potency: int, anyNumber: bool, random: bool, filter: Callable[[Card], bool], consumer: Callable[[List[Card]], None]) -> None:
 		super().__init__()
 		self.owner = owner
 		self.source = source
@@ -241,11 +249,9 @@ class SelectCardsEvent(Event):
 		self.consumer = consumer
 	
 	def update(self) -> None:
-		# Obtain the pile concerned for the action
-		basePile: CardStack = getattr(self.owner, self.source.value.lower())
 		# Create a new pile and filter the base pile depending on the chosen condition into it
 		pile = CardStack()
-		for card in basePile:
+		for card in getCardStack(self.owner, self.source):
 			if self.filter(card):
 				pile.append(card)
 		# Create an empty pile for the selected pile
@@ -272,7 +278,7 @@ class SelectCardsEvent(Event):
 				print(pile)
 				try:
 					# Ask the player which card to choose
-					choice = int(input(f"{TextColor.YELLOW}Enter the number of the card you wish to choose: {TextColor.BLANK}")) - 1
+					choice = int(input(f"{Color.YELLOW}Enter the number of the card you wish to choose: {Color.BLANK}")) - 1
 					# If 0 is chosen and anyNumber is true, abort
 					if choice == -1 and self.anyNumber:
 						break
@@ -288,7 +294,7 @@ class SelectCardsEvent(Event):
 					self.potency -= 1	
 				# In case of an invalid input, inform the player and continue the loop
 				except (ValueError, TypeError):
-					print(f"{TextColor.RED}Please enter a valid input!{TextColor.BLANK}\n")
+					print(f"{Color.RED}Please enter a valid input!{Color.BLANK}\n")
 			# If no choice is needed, simply add all available cards and abort
 			else:
 				selection.extend(pile)
@@ -300,9 +306,9 @@ class SelectCardsEvent(Event):
 		# Tell the event manager that it can continue
 		self.isDone = True
 
-# Standart Ascend event
+# Standard Ascend event
 class AscendEvent(Event):
-	def __init__(self, owner: Actor, source: CardPileT, potency: int, anyNumber: bool, random: bool) -> None:
+	def __init__(self, owner: Actor, source: CardPile, potency: int, anyNumber: bool, random: bool) -> None:
 		super().__init__()
 		self.owner = owner
 		self.source = source
@@ -329,13 +335,23 @@ class AscendEvent(Event):
 
 """ Cards """
 
-class Test(Card):
+class Pantheon(Card):
 	def __init__(self) -> None:
-		super().__init__("Test Card", "This is a test", CardColor.PURPLE)
+		super().__init__()
+		self.name = "Pantheon"
+		self.description = "When played, you and your opponent recover {Color.PURPLE}{self.healing}{Color.BLANK} HP."
+		self.type = CardType.CREATION
+		self.color = CardColor.WHITE
 
-class Test2(Card):
-	def __init__(self) -> None:
-		super().__init__("Test Card 2", "This is a test", CardColor.PURPLE)
+		self.value[Elements.BELIEF] = 3
+		self.value[Elements.VIRTUE] = 1
+		self.healing = 10
+	
+	def onPlay(self, source: Actor, origin: CardPile) -> None:
+		GameManager.addToBot(RecoverEvent(source, self.healing))
+		GameManager.addToBot(RecoverEvent(GameManager.getOpponent(source), self.healing))
+
+		super().onPlay(source, origin)
 
 
 """ Final Setup """
