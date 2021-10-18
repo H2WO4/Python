@@ -212,7 +212,7 @@ BuildingImages: Dict[str, tk.Image] = {}
 
 RessourceList: Dict[str, Ressource] = {}
 
-path = "/Citylization"
+path = "/Divers/Citylization"
 for filename in glob.glob(os.path.join(os.getcwd() + path, "*.json")):
     with open(os.path.join(os.getcwd(), filename), "r") as f:
         BuildingListRaw.append(json.load(f))
@@ -269,7 +269,7 @@ main.title("Citylization")
 
 
 # Load images
-path = "/CitylizationImages"
+path = "/Divers/CitylizationImages"
 for filename in glob.glob(os.path.join(os.getcwd() + path, "*.png")):
     BuildingImages[filename.removeprefix(os.getcwd() + path + "\\").removesuffix(".png")] = tk.PhotoImage(file=filename)
 
