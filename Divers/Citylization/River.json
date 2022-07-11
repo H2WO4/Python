@@ -1,17 +1,16 @@
 {
-    "name" : "River",
-    "id" : "river",
-    "type" : "nature",
-    "symbol" : "\u2248",
-    "description" : "Counts as a water source.\nIrrigate adjacent tiles.",
-    "yields" : [],
-    "tags" :
-    [
-        {
-            "name" : "water"
-        },
-        {
-            "name" : "irrigation"
-        }
-    ]
+  "name": "River",
+  "id": "river",
+  "type": "nature",
+  "symbol": "\u2248",
+  "description": "Counts as a water source.\nIrrigate adjacent tiles.",
+  "yields": [],
+  "tags": [
+    {
+      "name": "water"
+    },
+    {
+      "name": "irrigation"
+    }
+  ]
 }

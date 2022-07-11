@@ -1,10 +1,13 @@
 from random import shuffle
+from typing import TypeVar
+
+T = TypeVar("T")
 
 # On définit une fonction MergeSort
 # Cet algorithme de tri est recursif, il fait donc appel à lui même dans la définition de sa fonction
 # Il fonctionne en séparant la liste en groupes de 1, puis en triant ces groupes pour les joindres à nouveau
 # L'un des algorithme les plus rapide, seul probléme, c'est celui qui prend le plus de place sur la RAM pendant son execution
-def MergeSort(toSort):
+def MergeSort(toSort: list[T]) -> list[T]:
     # On verifie que la liste d'entrée contient au moins deux éléments
     if len(toSort) > 1:
         # On prend le millieu de la liste, dans le cas de n impaire, la liste de gauche sera plus grande
@@ -14,12 +17,12 @@ def MergeSort(toSort):
         list2 = toSort[midPoint:]
 
         # On commence la reccursion, afin de trier ces deux listes suivant un MergeSort
-        list1 = MergeSort(list1)
-        list2 = MergeSort(list2)
+        list1: list[T] = MergeSort(list1)
+        list2: list[T] = MergeSort(list2)
         # Les deux listes sont donc maintenant triées indépendamment les unes des autres
 
         # On définie une liste vide pour trier les deux listes entre elles
-        output = []
+        output: list[T] = []
         # Pour tout les éléments des deux listes
         for _ in range(len(list1) + len(list2)):
             # Si la première liste est vide, alors on prend une valeur dans la deuxième

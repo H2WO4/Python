@@ -41,8 +41,8 @@ class Modifier:
 def create_card(name: str, *modifiers: Modifier) -> Card:
 	vars = {"atk": 0.0, "def": 0.0, "draw": 0.0}
 	cost = 0
-	use = "def card_use_{}(card, source, target):\n".format(Card.total) + "\tprint(\"Used {} energy\".format(card.cost))\n"
-	can_use = "def card_can_use_{}(card, source, target):\n\tresult = True\n".format(Card.total)
+	use = f"def card_use_{Card.total}(card, source, target):\n" + "\tprint(f'Used {card.cost} energy'\n"
+	can_use = f"def card_can_use_{Card.total}(card, source, target):\n\tresult = True\n"
 	for i in sorted(modifiers, key = lambda x: x.priority[0]):
 		for j in i.varsModif:
 			if i.varsModif[j][0] == "plus":
@@ -75,19 +75,19 @@ def create_card(name: str, *modifiers: Modifier) -> Card:
 		vars[i] = int(vars[i])
 	
 	if vars["draw"] == 1:
-		use += "\tprint(\"Draw {} card\".format(card.vars['draw']))\n"
+		use += "\tprint(f'Draw {card.vars[\"draw\"]} card')\n"
 	if vars["draw"] > 1:
-		use += "\tprint(\"Draw {} cards\".format(card.vars['draw']))\n"
+		use += "\tprint(f'Draw {card.vars[\"draw\"]} cards')\n"
 
 	exec(use)
 	exec(can_use)
 
-	return Card(name, "", cost, vars, eval("card_use_{}".format(Card.total)), eval("card_can_use_{}".format(Card.total)))
+	return Card(name, "", cost, vars, eval(f"card_use_{Card.total}"), eval(f"card_can_use_{Card.total}"))
 
 
-basicDamage = Modifier("Basic Damage", (0, 50, 100), {"atk": ("plus", 9)}, 1, "print(\"Deal {} damage\".format(card.vars['atk']))")
-doubleDamage = Modifier("Double Damage", (0, 50, 100), {"atk": ("plus", 4)}, 1, ["print(\"Deal {} damage\".format(card.vars['atk']))", "print(\"Deal {} damage\".format(card.vars['atk']))"])
-basicBlock = Modifier("Basic Block", (0, 50, 100), {"def": ("plus", 7)}, 1, "print(\"Gained {} block\".format(card.vars['def']))")
+basicDamage = Modifier("Basic Damage", (0, 50, 100), {"atk": ("plus", 9)}, 1, "print(f'Deal {card.vars[\"atk\"]} damage')")
+doubleDamage = Modifier("Double Damage", (0, 50, 100), {"atk": ("plus", 4)}, 1, ["print(f'Deal {card.vars[\"atk\"]} damage')", "print(f'Deal {card.vars[\"atk\"]} damage')"])
+basicBlock = Modifier("Basic Block", (0, 50, 100), {"def": ("plus", 7)}, 1, "print(f'Gained {card.vars[\"def\"]} block')")
 damageMultiplexer = Modifier("Damage Muliplexer", (5, 100, 100), {"atk": ("times", 2)}, 1)
 costDown = Modifier("Cost Down", (51, 100, 100), {"atk": ("times", 0.7), "def": ("times", 0.7)}, -1)
 drawOne = Modifier("Draw One", (50, 51, 100), {"atk": ("times", 0.85), "draw": ("plus", 1)})

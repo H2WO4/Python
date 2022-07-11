@@ -1,36 +1,32 @@
 {
-    "name" : "Woodcutter's Cabin",
-    "id" : "woodcutter",
-    "type" : "building",
-    "symbol" : "C",
-    "description" : "Produces 1 Wood every turn.\nProduces +2 Wood per adjacent Woods.",
-    "yields" :
-    [
+  "name": "Woodcutter's Cabin",
+  "id": "woodcutter",
+  "type": "building",
+  "symbol": "C",
+  "description": "Produces 1 Wood every turn.\nProduces +2 Wood per adjacent Woods.",
+  "yields": [
+    {
+      "type": "turn",
+      "gains": [
         {
-            "type" : "turn",
-            "gains" :
-            [
+          "ressource": "wood",
+          "amount": 1,
+          "modifiers": [
+            {
+              "scope": "neighbors",
+              "targets": [
                 {
-                    "ressource" : "wood",
-                    "amount" : 1,
-                    "modifiers" :
-                    [
-                        {
-                            "scope" : "neighbors",
-                            "targets" :
-                            [
-                                {
-                                    "type" : "building",
-                                    "target" : "woods"
-                                }
-                            ],
-                            "type" : "additive",
-                            "amount" : 2
-                        }
-                    ]
+                  "type": "building",
+                  "target": "woods"
                 }
-            ]
+              ],
+              "type": "additive",
+              "amount": 2
+            }
+          ]
         }
-    ],
-    "tags" : []
+      ]
+    }
+  ],
+  "tags": []
 }

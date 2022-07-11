@@ -1,14 +1,13 @@
 {
-    "name" : "Empty",
-    "id" : "empty",
-    "type" : "system",
-    "symbol" : "",
-    "description" : "",
-    "yields" : [],
-    "tags" :
-    [
-        {
-            "name" : "empty"
-        }
-    ]
+  "name": "Empty",
+  "id": "empty",
+  "type": "system",
+  "symbol": "",
+  "description": "",
+  "yields": [],
+  "tags": [
+    {
+      "name": "empty"
+    }
+  ]
 }

@@ -1,36 +1,32 @@
 {
-    "name" : "Bar",
-    "id" : "bar",
-    "type" : "building",
-    "symbol" : "B",
-    "description" : "Produces 2 Gold every turn.\nProduces +1 Gold per housing in a 2-tile range.",
-    "yields" :
-    [
+  "name": "Bar",
+  "id": "bar",
+  "type": "building",
+  "symbol": "B",
+  "description": "Produces 2 Gold every turn.\nProduces +1 Gold per housing in a 2-tile range.",
+  "yields": [
+    {
+      "type": "turn",
+      "gains": [
         {
-            "type" : "turn",
-            "gains" :
-            [
+          "ressource": "gold",
+          "amount": 2,
+          "modifiers": [
+            {
+              "scope": "direct_neighbors_2",
+              "targets": [
                 {
-                    "ressource" : "gold",
-                    "amount" : 2,
-                    "modifiers" :
-                    [
-                        {
-                            "scope" : "direct_neighbors_2",
-                            "targets" :
-                            [
-                                {
-                                    "type" : "tag",
-                                    "target" : "housing"
-                                }
-                            ],
-                            "type" : "additive",
-                            "amount" : 1
-                        }
-                    ]
+                  "type": "tag",
+                  "target": "housing"
                 }
-            ]
+              ],
+              "type": "additive",
+              "amount": 1
+            }
+          ]
         }
-    ],
-    "tags" : []
+      ]
+    }
+  ],
+  "tags": []
 }

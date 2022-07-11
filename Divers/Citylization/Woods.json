@@ -1,9 +1,9 @@
 {
-    "name" : "Woods",
-    "id" : "woods",
-    "type" : "nature",
-    "symbol" : "W",
-    "description" : "",
-    "yields" : [],
-    "tags" : []
+  "name": "Woods",
+  "id": "woods",
+  "type": "nature",
+  "symbol": "W",
+  "description": "",
+  "yields": [],
+  "tags": []
 }
